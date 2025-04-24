@@ -18,8 +18,8 @@ import { ChevronDown } from "lucide-react";
 
 const BudgetFilter = () => {
   const [minBudget, setMinBudget] = useState(0);
-  const [maxBudget, setMaxBudget] = useState(10);
-  const [sliderValue, setSliderValue] = useState(10);
+  const [maxBudget, setMaxBudget] = useState(10000000);
+  const [sliderValue, setSliderValue] = useState(10000000);
   const router = useRouter();
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -43,7 +43,7 @@ const BudgetFilter = () => {
       </CollapsibleTrigger>
       <CollapsibleContent className="space-y-4 pt-4">
         <p className="text-sm">
-          ₹ {minBudget}L to ₹ {maxBudget}L
+          ₹ {minBudget} to ₹ {maxBudget}
         </p>
         <div className="flex gap-4">
           <Select onValueChange={(value) => setMinBudget(Number(value))}>
@@ -51,7 +51,7 @@ const BudgetFilter = () => {
               <SelectValue placeholder="Min Budget" />
             </SelectTrigger>
             <SelectContent>
-              {[0, 5, 10, 15, 20].map((value) => (
+              {[0, 500000, 1000000, 1500000, 2000000,2500000,3000000,3500000,4000000].map((value) => (
                 <SelectItem key={value} value={value.toString()}>
                   ₹ {value}L
                 </SelectItem>
@@ -63,7 +63,7 @@ const BudgetFilter = () => {
               <SelectValue placeholder="Max Budget" />
             </SelectTrigger>
             <SelectContent>
-              {[minBudget, 10, 15, 20, 25]
+              {[minBudget,500000, 1000000, 1500000, 2000000,2500000,3000000,3500000,4000000,4500000,5000000,5500000,6000000,6500000,7000000,7500000,8500000,9000000,9500000,10000000]
                 .filter((value) => value >= minBudget)
                 .map((value) => (
                   <SelectItem key={value} value={value.toString()}>
@@ -77,7 +77,7 @@ const BudgetFilter = () => {
           value={[sliderValue]}
           onValueChange={(value) => handleSliderChange(value[0])}
           min={0}
-          max={50}
+          max={10000000}
           step={1}
           className="w-full"
         />

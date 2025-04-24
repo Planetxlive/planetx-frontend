@@ -107,7 +107,7 @@ export const Navbar = () => {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/show-property", label: "All Properties" },
+    { href: "/show-property?minPrice=0&maxPrice=10000000", label: "All Properties" },
     { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
     { href: "/highlights", label: "Highlights" },
     { href: "/dashboard/wishlist", label: "Wishlist" },
