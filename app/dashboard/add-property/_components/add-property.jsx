@@ -14,7 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import SubmitPropertyDialog from "./dialogSubmitProperty";
 import LoadingScreen from "./loader";
 import { useToast } from "@/hooks/use-toast";
-
+import { uploadPropertyImages, uploadPropertyVideo } from "@/lib/uploader";
 const steps = [
   { number: 1, title: "Basic Information" },
   { number: 2, title: "Property Details" },
@@ -67,18 +67,44 @@ export function AddPropertyForm() {
     }
   
     propertyData.role = lookingFor;
-    formData.append("propertyData", JSON.stringify(propertyData));
+    // formData.append("propertyData", JSON.stringify(propertyData));
   
     if (files.images.length > 0) {
-      files.images.forEach((image) => {
-        formData.append("images", image);
+      files.images.forEach((image, index) => {
+        formData.append(`images-${index}`, image);
       });
     }
-  
-    if (files.video) {
-      formData.append("video", files.video);
+    const imageResponse = await uploadPropertyImages(formData, files.images.length);
+    console.log("imageResponse: ", imageResponse);
+    const imageResponseData = JSON.parse(imageResponse);
+    if(!imageResponseData.success){
+      toast({
+        title: "Error",
+        description: imageResponseData.error,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
     }
-  
+    const imageURLs = imageResponseData.imageURLs;
+
+    if (files.video) {
+      formData.append(`video`, files.video);
+    }
+    const videoResponse = await uploadPropertyVideo(formData);
+    console.log("videoResponse: ", videoResponse);
+    const videoResponseData = JSON.parse(videoResponse);
+    if(!videoResponseData.success){
+      toast({
+        title: "Error",
+        description: videoResponseData.error,
+        variant: "destructive",
+      });
+    }
+    const videoURL = videoResponseData.videoURL;
+
+
+
     let token = localStorage.getItem("accessToken");
     if (!token) {
       toast({
@@ -100,11 +126,11 @@ export function AddPropertyForm() {
     try {
       const response = await axios.post(
         `${BACKEND_URL}/properties/add`,
-        formData,
+        {propertyData, images: imageURLs, video: videoURL},
         {
           headers: {
             Authorization: token,
-            "Content-Type": "multipart/form-data",
+            "Content-Type": "application/json",
           },
         }
       );

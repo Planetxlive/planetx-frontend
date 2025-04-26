@@ -3,7 +3,7 @@ const nextConfig = {
   images: {
     domains: [
       "hebbkx1anhila5yf.public.blob.vercel-storage.com",
-      "d184sobil26gg7.cloudfront.net"
+      "d35tq0e02t18sa.cloudfront.net"
     ],
   },
   eslint:{
@@ -11,6 +11,11 @@ const nextConfig = {
   },
   typescript:{
     ignoreBuildErrors:true,
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb',
+    },
   }
 };
 
