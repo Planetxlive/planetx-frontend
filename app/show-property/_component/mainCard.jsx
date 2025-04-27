@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
 import { Heart, Search, Star, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,18 +18,14 @@ import {
 
 // SortFilter Component
 const SortFilter = ({ onSortChange }) => {
-  const handleSortChange = (value) => {
-    onSortChange(value);
-  };
-
   return (
-    <Select onValueChange={handleSortChange} defaultValue="default">
+    <Select onValueChange={onSortChange} defaultValue="default">
       <SelectTrigger className="w-[180px] bg-white border-gray-200 focus:border-teal-600 rounded-lg">
         <SelectValue placeholder="Sort by" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="default">Default</SelectItem>
-        <SelectItem value="price-asc">Price: High to Low</SelectItem>
+        <SelectItem value="price-asc">Price: High to Low </SelectItem>
         <SelectItem value="price-desc">Price: Low to High</SelectItem>
       </SelectContent>
     </Select>
@@ -39,10 +34,8 @@ const SortFilter = ({ onSortChange }) => {
 
 // MainCard Component
 const MainCard = () => {
-
   const [propertyData, setPropertyData] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
-
   const [sortOption, setSortOption] = useState("default");
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
@@ -50,7 +43,7 @@ const MainCard = () => {
   const [wishlistLoading, setWishlistLoading] = useState({});
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [searchTerm, setSearchTerm] = useState( "");
 
   // Fetch user ID and wishlist data
   useEffect(() => {
@@ -96,7 +89,6 @@ const MainCard = () => {
         );
         const properties = response.data.properties || [];
         setPropertyData(properties);
-        // setFilteredProperties(properties);
       } catch (error) {
         console.error("Error fetching property data:", error);
       } finally {
@@ -107,34 +99,30 @@ const MainCard = () => {
     fetchPropertyData();
   }, [searchParams]);
 
-  // <----- Fetching Filtered Available Properties ----->
-  useEffect(()=>{
+  // Fetch filtered properties
+  useEffect(() => {
     const fetchFilteredProperties = async () => {
       const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
       if (!token) return;
 
       try {
         setLoading(true);
-        const response = await axios.get(`${BACKEND_URL}/properties/availableFilteredProperty?${new URLSearchParams(
+        const response = await axios.get(
+          `${BACKEND_URL}/properties/availableFilteredProperty?${new URLSearchParams(
             searchParams
           ).toString()}`,
-        {
-          headers: { Authorization: token},
-        })
-
-        const properties = response.data || [];
-        // console.log("Filtered properties:", properties);
-        setFilteredProperties(properties.data);
+          { headers: { Authorization: token } }
+        );
+        const properties = response.data?.data || [];
+        setFilteredProperties(properties);
       } catch (error) {
-        console.error("Error fetching property data:", error);
+        console.error("Error fetching filtered properties:", error);
       } finally {
         setLoading(false);
       }
     };
     fetchFilteredProperties();
-  },[searchParams])
-
-console.log("Filtered properties:", filteredProperties);
+  }, [searchParams]);
 
   // Handle wishlist toggle
   const handleWishlistToggle = async (propertyId) => {
@@ -155,11 +143,8 @@ console.log("Filtered properties:", filteredProperties);
       if (isInWishlist) {
         const response = await axios.delete(
           `${BACKEND_URL}/wishlist/remove/${propertyId}`,
-          {
-            headers: { Authorization: token },
-          }
+          { headers: { Authorization: token } }
         );
-
         if (response.status === 200) {
           setWishlist(wishlist.filter((id) => id !== propertyId));
           toast({
@@ -195,18 +180,18 @@ console.log("Filtered properties:", filteredProperties);
   // Filter and sort properties
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
-    console.log("Search term:", term);
     setSearchTerm(term);
 
-    let filtered = propertyData;
+    let filtered =propertyData;
     if (term) {
       filtered = filteredProperties.filter((property) => {
-        const name = property._doc.name?.toLowerCase() || "";
-        const description = property._doc.description?.toLowerCase() || "";
-        const category = property._doc.category?.toLowerCase() || "";
-        const propertyType = property._doc.propertyType?.toLowerCase() || "";
-        const propertyStatus = property._doc.propertyStatus?.toLowerCase() || "";
-        const location = getFullAddress(property._doc.location).toLowerCase();
+        const doc = property._doc || property; // Fallback to property if _doc is missing
+        const name = doc.name?.toLowerCase() || "";
+        const description = doc.description?.toLowerCase() || "";
+        const category = doc.category?.toLowerCase() || "";
+        const propertyType = doc.propertyType?.toLowerCase() || "";
+        const propertyStatus = doc.propertyStatus?.toLowerCase() || "";
+        const location = getFullAddress(doc.location || {}).toLowerCase();
 
         return (
           name.includes(term) ||
@@ -219,23 +204,23 @@ console.log("Filtered properties:", filteredProperties);
       });
     }
 
-    // Apply sorting
     const sorted = [...filtered].sort((a, b) => {
-      const getPrice = (property) =>
-        property?.pricing?.price?.amount ||
-        property?.pricing?.expectedPrice ||
-        property?.pricing?.monthlyRent ||
-        0;
+      const getPrice = (property) => {
+        const doc = property._doc || property;
+        return (
+          doc?.pricing?.price?.amount ||
+          doc?.pricing?.expectedPrice ||
+          doc?.pricing?.monthlyRent ||
+          0
+        );
+      };
 
       const priceA = getPrice(a);
       const priceB = getPrice(b);
 
-      if (sortOption === "price-asc") {
-        return priceA - priceB;
-      } else if (sortOption === "price-desc") {
-        return priceB - priceA;
-      }
-      return 0; // Default: no sorting
+      if (sortOption === "price-asc") return priceA - priceB;
+      if (sortOption === "price-desc") return priceB - priceA;
+      return 0;
     });
 
     setFilteredProperties(sorted);
@@ -244,8 +229,7 @@ console.log("Filtered properties:", filteredProperties);
   // Handle sort change
   const handleSortChange = (value) => {
     setSortOption(value);
-    // console.log("Sort option:", value);
-    handleSearch({ target: { value: searchTerm } }); // Re-apply search with current term and new sort
+    handleSearch({ target: { value: searchTerm } });
   };
 
   const getFullAddress = (location) =>
@@ -260,10 +244,12 @@ console.log("Filtered properties:", filteredProperties);
       .filter(Boolean)
       .join(", ");
 
-      const getAverageRating = (reviews) =>
-      reviews?.length > 0
-        ? (reviews.reduce((sum, r) => sum + (r.stars || 0), 0) / reviews.length).toFixed(1)
-        : null;
+  const getAverageRating = (reviews) =>
+    Array.isArray(reviews) && reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + (r.stars || 0), 0) / reviews.length
+        ).toFixed(1)
+      : null;
 
   const renderStars = (rating) => {
     const stars = [];
@@ -291,9 +277,9 @@ console.log("Filtered properties:", filteredProperties);
   };
 
   return (
-    <section className="flex-1 p-6 max-w-full bg-gray-50">
+    <section className="flex-1 p-4 sm:p-6 max-w-full bg-gray-50">
       {/* Search Header */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8 max-w-6xl mx-auto">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-6xl mx-auto">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <Input
@@ -301,6 +287,7 @@ console.log("Filtered properties:", filteredProperties);
             placeholder="Search by area, city, name, category, or type"
             value={searchTerm}
             onChange={handleSearch}
+            aria-label="Search properties"
           />
         </div>
         <SortFilter onSortChange={handleSortChange} />
@@ -309,8 +296,8 @@ console.log("Filtered properties:", filteredProperties);
       {/* Content */}
       <div className="max-w-6xl mx-auto">
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+          <div className="flex flex-col items-center py-12">
+            <Loader2 className="h-12 w-12 text-teal-600 animate-spin" />
             <p className="mt-4 text-gray-600">Loading properties...</p>
           </div>
         ) : filteredProperties.length === 0 ? (
@@ -322,32 +309,41 @@ console.log("Filtered properties:", filteredProperties);
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
             {filteredProperties.map((property) => {
-              const averageRating = getAverageRating(property._doc.reviews);
+              const doc = property._doc || property; // Fallback to property if _doc is missing
+              const averageRating = getAverageRating(doc.reviews || []);
               return (
                 <article
-                  key={property._doc._id}
-                  className="bg-white border border-gray-100 rounded-2xl p-5 flex flex-col md:flex-row gap-5 shadow-sm hover:shadow-xl transition-all duration-300"
+                  key={doc._id}
+                  className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-xl transition-all duration-300"
+                  role="article"
+                  aria-labelledby={`property-${doc._id}`}
                 >
                   {/* Image */}
-                  <div className="relative w-full md:w-72 h-56 flex-shrink-0 rounded-xl overflow-hidden">
+                  <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
                     <img
-                      src={property?.images?.[0] || "/default-property.jpg"}
-                      alt={property._doc.location.subLocality || "Property"}
+                      src={property?.images?.[0] }
+                      alt={doc.location?.subLocality || "Property image"}
                       className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                      loading="lazy"
                     />
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full transition-all duration-200"
-                      onClick={() => handleWishlistToggle(property._doc._id)}
-                      disabled={wishlistLoading[property._doc._id]}
+                      className="absolute top-2 right-2 bg-white/90 hover:bg-white rounded-full transition-all duration-200"
+                      onClick={() => handleWishlistToggle(doc._id)}
+                      disabled={wishlistLoading[doc._id]}
+                      aria-label={
+                        wishlist.includes(doc._id)
+                          ? "Remove from wishlist"
+                          : "Add to wishlist"
+                      }
                     >
-                      {wishlistLoading[property._doc._id] ? (
-                        <Loader2 className="h-6 w-6 text-gray-500 animate-spin" />
+                      {wishlistLoading[doc._id] ? (
+                        <Loader2 className="h-5 w-5 text-gray-500 animate-spin" />
                       ) : (
                         <Heart
-                          className={`h-6 w-6 transition-all duration-200 ${
-                            wishlist.includes(property._doc._id)
+                          className={`h-5 w-5 transition-all duration-200 ${
+                            wishlist.includes(doc._id)
                               ? "text-red-500 fill-red-500"
                               : "text-gray-500 hover:text-red-500"
                           }`}
@@ -357,86 +353,83 @@ console.log("Filtered properties:", filteredProperties);
                   </div>
 
                   {/* Details */}
-                  <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex-1 flex flex-col justify-between gap-2">
                     <div>
-                      <div className="flex flex-col md:flex-row justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row justify-between gap-3">
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-gray-900 truncate">
-                            {property._doc.location.subLocality},{" "}
-                            {property._doc.location.locality}
+                          <h3
+                            id={`property-${doc._id}`}
+                            className="text-lg sm:text-xl font-semibold text-gray-900 truncate"
+                          >
+                            {doc.location?.subLocality},{" "}
+                            {doc.location?.locality}
                           </h3>
-                          <p className="text-sm text-gray-500 line-clamp-2 mt-1">
-                            {getFullAddress(property._doc.location)}
+                          <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">
+                            {getFullAddress(doc.location || {})}
                           </p>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           {averageRating ? (
                             <>
                               <div className="flex">{renderStars(averageRating)}</div>
-                              <span className="text-sm font-medium text-gray-700">
-                                {averageRating} ({property._doc.reviews.length})
+                              <span className="text-xs sm:text-sm font-medium text-gray-700">
+                                {averageRating} ({(doc.reviews || []).length})
                               </span>
                             </>
                           ) : (
-                            <span className="text-sm text-gray-500">
+                            <span className="text-xs sm:text-sm text-gray-500">
                               No Reviews
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex gap-3 mt-2">
-                        <span className="text-sm text-teal-600 font-medium bg-teal-50 px-2 py-1 rounded-full capitalize">
-                          {property._doc.category || "Unknown"}
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2 py-1 rounded-full capitalize">
+                          {doc.category || "Unknown"}
                         </span>
-                        <span className="text-sm text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
-                          {property._doc.propertyType || "Unknown"}
+                        <span className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
+                          {doc.propertyType || "Unknown"}
                         </span>
                       </div>
 
-                      <p className="text-sm text-gray-600 mt-3 line-clamp-2">
-                        {property._doc.description ||
+                      <p className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-3 line-clamp-2">
+                        {doc.description ||
                           "No description available for this property."}
                       </p>
 
-                      <div className="mt-4 grid grid-cols-2 gap-4">
+                      <div className="mt-2 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-4">
                         <div>
-                          <p className="text-lg font-semibold text-gray-900">
-                          {property._doc?.pricing?.price?.amount
-                              ? `₹${property._doc.pricing.price.amount.toLocaleString(
+                          <p className="text-base sm:text-lg font-semibold text-gray-900">
+                            {doc?.pricing?.price?.amount
+                              ? `₹${doc.pricing.price.amount.toLocaleString(
                                   "en-IN"
                                 )}`
-                              : property._doc?.pricing?.expectedPrice
-                              ? `₹${property._doc.pricing.expectedPrice.toLocaleString(
+                              : doc?.pricing?.expectedPrice
+                              ? `₹${doc.pricing.expectedPrice.toLocaleString(
                                   "en-IN"
                                 )}`
-                              : property._doc?.pricing?.monthlyRent
-                              ? `₹${property._doc.pricing.monthlyRent.toLocaleString(
+                              : doc?.pricing?.monthlyRent
+                              ? `₹${doc.pricing.monthlyRent.toLocaleString(
                                   "en-IN"
                                 )}/mo`
-                                : property._doc?.pricing?.finalPrice
-                                ? `₹${property._doc.pricing.finalPrice.toLocaleString(
-                                    "en-IN"
-                                  )}`
+                              : doc?.pricing?.finalPrice
+                              ? `₹${doc.pricing.finalPrice.toLocaleString(
+                                  "en-IN"
+                                )}`
                               : "Price N/A"}
                           </p>
                           <p className="text-xs text-gray-500">Price</p>
                         </div>
-                        {/* <div>
-                          <p className="text-lg font-semibold text-gray-900">
-                            {property._doc.area} Sqft
-                          </p>
-                          <p className="text-xs text-gray-500">Carpet Area</p>
-                        </div> */}
                       </div>
                     </div>
 
-                    <div className="mt-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                      <p className="text-sm text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize">
-                        {property._doc.propertyStatus}
+                    <div className="mt-3 sm:mt-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                      <p className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize">
+                        {doc.propertyStatus || "Unknown"}
                       </p>
                       <div className="flex gap-2">
-                        <Link href={`/show-property/${property._doc._id}`}>
+                        <Link href={`/show-property/${doc._id}`}>
                           <Button
                             size="sm"
                             className="rounded-full bg-teal-600 hover:bg-teal-700 transition-colors px-4"

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, Linkedin, Instagram } from "lucide-react";
+import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 
 export const Footer = () => {
   return (
@@ -20,28 +22,34 @@ export const Footer = () => {
           </p>
           <div className="flex gap-3 sm:gap-4">
             <Link
-              href="#"
+              href="https://www.linkedin.com/in/planet-x-596924356/"
               className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-[#F2E6FF] rounded-full hover:bg-opacity-90 transition-all duration-200"
             >
               <Linkedin width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
             </Link>
             <Link
-              href="#"
+              href="https://www.instagram.com/_planetx_live/?hl=en"
               className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-[#F2E6FF] rounded-full hover:bg-opacity-90 transition-all duration-200"
             >
-              <Instagram width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
+              <FaInstagram width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
             </Link>
             <Link
-              href="#"
+              href="https://www.facebook.com/profile.php?id=61574182288463"
               className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-[#F2E6FF] rounded-full hover:bg-opacity-90 transition-all duration-200"
             >
-              <Instagram width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
+              <FaFacebook width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
             </Link>
             <Link
-              href="#"
+              href="https://www.youtube.com/@PlanetX-live"
               className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-[#F2E6FF] rounded-full hover:bg-opacity-90 transition-all duration-200"
             >
-              <Instagram width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
+              <FaYoutube width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
+            </Link>
+            <Link
+              href="https://x.com/Planetx_live"
+              className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 bg-[#F2E6FF] rounded-full hover:bg-opacity-90 transition-all duration-200"
+            >
+              <SiX width={20} height={20} sm={{ width: 24, height: 24 }} className="text-[#7B00FF]" />
             </Link>
           </div>
         </div>

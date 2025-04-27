@@ -410,8 +410,7 @@ export default function DashboardPage() {
                 </select>
                 <div className="flex gap-2">
                   {[
-                    { icon: "ℹ️", tooltip: "Info" },
-                    { icon: "✏️", tooltip: "Edit" },
+                    
                     { icon: "🗑️", tooltip: "Delete" },
                   ].map((action, idx) => (
                     <motion.button

@@ -134,7 +134,7 @@ export const ContactForm = () => {
                   <div className="flex items-center gap-[10px]">
                     <Mail className="h-6 w-6 text-[#6C696A]" />
                     <span className="font-poppins text-sm font-medium text-[#6C696A]">
-                      property@planetx.com
+                    contact@planetx-live.com
                     </span>
                   </div>
                   <div className="flex items-center gap-[10px]">

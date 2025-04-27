@@ -5,7 +5,7 @@ import { SiLinkedin, SiX } from "react-icons/si";
 export const Header = () => {
   const contacts = [
     { icon: <FaPhoneAlt fill="white" />, text: "+91 98735 81566" },
-    { icon: <IoMdMail fill="white" className="text-[20px]" />, text: "property@planetx.com" },
+    { icon: <IoMdMail fill="white" className="text-[20px]" />, text: "contact@planetx-live.com" },
   ];
 
   const socialLinks = [

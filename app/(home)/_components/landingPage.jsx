@@ -43,7 +43,7 @@ export const LandingPage = () => {
             step towards your future.
           </p>
           <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            Find Your Dream Home, Hassle-Free
+              Every Space for Every Need. 
           </h1>
         </div>
         <div className="w-full max-w-3xl">
