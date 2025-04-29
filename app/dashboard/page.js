@@ -293,7 +293,7 @@ export default function DashboardPage() {
             >
               <div className="w-full h-40 relative rounded-xl overflow-hidden">
                 <Image
-                  src={property.image || "/images/placeholder.jpg"}
+                  src={property.images?.[0] || "/images/placeholder.jpg"}
                   alt={property.location.city}
                   layout="fill"
                   objectFit="cover"
