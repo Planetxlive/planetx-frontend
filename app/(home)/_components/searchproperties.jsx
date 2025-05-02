@@ -21,7 +21,7 @@ export const Search = () => {
   const [activeBox, setActiveBox] = useState("Residential");
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState(searchParams.get("minPrice") || "0");
-  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "10000000");
+  const [maxPrice, setMaxPrice] = useState(searchParams.get("maxPrice") || "100000000");
   const [propertyType, setPropertyType] = useState(searchParams.get("propertyType") || "For Sale");
   const [category, setCategory] = useState(searchParams.get("category") || "Residential");
 

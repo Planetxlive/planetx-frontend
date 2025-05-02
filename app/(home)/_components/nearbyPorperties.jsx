@@ -153,18 +153,6 @@ export const NearbyProperties = () => {
     }
   }
 
-  // Format price
-  // const formatPrice = (pricing) => {
-  //   if (pricing?.price?.amount) {
-  //     return `₹${pricing.price.amount.toLocaleString('en-IN')}`
-  //   } else if (pricing?.expectedPrice) {
-  //     return `₹${pricing.expectedPrice.toLocaleString('en-IN')}`
-  //   } else if (pricing?.monthlyRent) {
-  //     return `₹${pricing.monthlyRent.toLocaleString('en-IN')}/mo`
-  //   }
-  //   return 'Price N/A'
-  // }
-
   // Format location
   const getLocationString = (location) =>
     [
@@ -208,7 +196,7 @@ export const NearbyProperties = () => {
                     className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                   >
                     <Card className="w-full max-w-[320px] mx-auto h-[400px] flex flex-col border border-[#E1E1E1] rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
-                      <div className="relative w-full h-[220px]">
+                      <div className="relative w-full aspect-[16/9]">
                         <Button
                           size="icon"
                           variant="ghost"
@@ -231,10 +219,10 @@ export const NearbyProperties = () => {
                         <Image
                           src={property.images?.[0]?.url || '/default-property.jpg'}
                           alt={property.location?.subLocality || 'Property'}
-                          width={320}
-                          height={220}
-                          className="w-full h-full object-cover"
-                          priority
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover rounded-t-xl"
+                          priority={properties.indexOf(property) < 3} // Priority for first 3 images only
                         />
                       </div>
                       <CardContent className="flex flex-col gap-3 p-4 flex-grow">
@@ -256,17 +244,17 @@ export const NearbyProperties = () => {
                             <p className="font-semibold text-lg">
                               {property?.pricing?.price?.amount
                                 ? `₹${property.pricing.price.amount.toLocaleString(
-                                    "en-IN"
+                                    'en-IN'
                                   )}`
                                 : property?.pricing?.expectedPrice
                                 ? `₹${property.pricing.expectedPrice.toLocaleString(
-                                    "en-IN"
+                                    'en-IN'
                                   )}`
                                 : property?.pricing?.monthlyRent
                                 ? `₹${property.pricing.monthlyRent.toLocaleString(
-                                    "en-IN"
+                                    'en-IN'
                                   )}/mo`
-                                : "Price N/A"}
+                                : 'Price N/A'}
                             </p>
                             <p className="text-sm text-gray-500">
                               {property.builtUpArea?.size

@@ -18,8 +18,8 @@ import { ChevronDown } from "lucide-react";
 
 const BudgetFilter = () => {
   const [minBudget, setMinBudget] = useState(0);
-  const [maxBudget, setMaxBudget] = useState(10000000);
-  const [sliderValue, setSliderValue] = useState(10000000);
+  const [maxBudget, setMaxBudget] = useState(100000000);
+  const [sliderValue, setSliderValue] = useState(100000000);
   const router = useRouter();
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -53,7 +53,7 @@ const BudgetFilter = () => {
             <SelectContent>
               {[0, 500000, 1000000, 1500000, 2000000,2500000,3000000,3500000,4000000].map((value) => (
                 <SelectItem key={value} value={value.toString()}>
-                  ₹ {value}L
+                  ₹ {value}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -67,7 +67,7 @@ const BudgetFilter = () => {
                 .filter((value) => value >= minBudget)
                 .map((value) => (
                   <SelectItem key={value} value={value.toString()}>
-                    ₹ {value}L
+                    ₹ {value}
                   </SelectItem>
                 ))}
             </SelectContent>
@@ -77,7 +77,7 @@ const BudgetFilter = () => {
           value={[sliderValue]}
           onValueChange={(value) => handleSliderChange(value[0])}
           min={0}
-          max={10000000}
+          max={100000000}
           step={1}
           className="w-full"
         />

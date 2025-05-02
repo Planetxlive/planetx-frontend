@@ -46,11 +46,11 @@ export const LandingPage = () => {
               Every Space for Every Need. 
           </h1>
         </div>
-        <div className="w-full max-w-3xl">
+        {/* <div className="w-full max-w-3xl">
           <button onClick={()=>{router.push("/show-property?minPrice=0&maxPrice=10000000")}} className="rounded-md bg-white px-6 py-3 text-sm font-semibold text-black shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white/50">
             Explore Property
           </button>
-        </div>
+        </div> */}
         <Search/>
       </div>
     </section>
