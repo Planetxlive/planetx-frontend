@@ -1,8 +1,17 @@
-// components/ad-placeholder.jsx
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useEffect } from "react";
 
 export default function AdPlaceholder({ onClose }) {
+  useEffect(() => {
+    // Push ad to adsbygoogle when component mounts
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (error) {
+      console.error("Error loading AdSense ad:", error);
+    }
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <div className="relative bg-white rounded-lg shadow-2xl max-w-md w-full p-6 text-center">
@@ -17,17 +26,19 @@ export default function AdPlaceholder({ onClose }) {
           <X className="w-5 h-5" />
         </Button>
 
-        {/* Ad content */}
+        {/* Google AdSense ad */}
         <div className="mb-4">
-          <img
-            src="/placeholder.svg?height=200&width=300"
-            alt="Advertisement"
-            className="w-full h-32 sm:h-48 object-cover rounded-md"
-          />
+          <ins
+            className="adsbygoogle"
+            style={{ display: "block" }}
+            data-ad-client="ca-pub-7976720973471795"
+            data-ad-slot="YOUR_AD_SLOT_ID" // Replace with your actual ad slot ID
+            data-ad-format="auto"
+            data-full-width-responsive="true"
+          ></ins>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Your Ad Here</h3>
         <p className="text-sm text-gray-600 mb-4">
-          This is a placeholder ad. Continue exploring properties!
+          Continue exploring properties!
         </p>
         <Button
           onClick={onClose}
