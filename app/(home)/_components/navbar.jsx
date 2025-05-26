@@ -111,6 +111,7 @@ export const Navbar = () => {
     { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
     { href: "/highlights", label: "Highlights" },
     { href: "/dashboard/wishlist", label: "Wishlist" },
+    { href: "/blog", label: "Blog" },
   ];
 
   return (
@@ -230,6 +231,12 @@ export const Navbar = () => {
                         className="block px-5 py-3 hover:bg-gray-50 transition-colors"
                       >
                         Dashboard
+                      </Link>
+                      <Link
+                        href="/dashboard/myBlogs"
+                        className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                      >
+                        My Blogs
                       </Link>
                       <button
                         onClick={handleLogout}

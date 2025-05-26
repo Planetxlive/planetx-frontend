@@ -8,6 +8,7 @@ import {
   User,
   MessageSquare,
   ClipboardList,
+  FileText
 } from "lucide-react";
 
 export const AppSidebar = () => {
@@ -23,6 +24,11 @@ export const AppSidebar = () => {
       icon: <LayoutDashboard className="w-6 h-6" />,
       label: "Add Property",
       href: "/dashboard/add-property",
+    },
+    {
+      icon: <FileText className="w-6 h-6" />, // ✅ New My Blogs item
+      label: "My Blogs",
+      href: "/dashboard/myBlogs",
     },
     {
       icon: <Heart className="w-6 h-6" />,
