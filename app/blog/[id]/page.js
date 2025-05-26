@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
@@ -7,7 +8,12 @@ import { formatDate } from "@/lib/utils";
 import axios from "axios";
 import BACKEND_URL from "@/lib/BACKEND_URL";
 import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
+
+
 import BlogPost from "./_components/blogPost";
+
+
 
 const getPostById = async (id) => {
 
@@ -35,8 +41,8 @@ const getPostById = async (id) => {
 //   }
 // }
 
-export default async function BlogPostPage({ params }) {
-  const { id } = await params;
+export default  function BlogPostPage({ params }) {
+  const { id } =  params;
 
-  return <BlogPost id={id} />;
+  return <BlogPost id={params.id} />;
 }

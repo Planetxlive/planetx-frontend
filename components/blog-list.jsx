@@ -23,14 +23,26 @@ export default function BlogList() {
   const [page, setPage] = useState(1);
   //   const [post, setPost] = useState([]);
   const post = useRef([]);
-  const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
+  // const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
   
-      if(!token){
-        router.push("/login")
-      }
+  //     if(!token){
+  //       router.push("/login")
+  //     }
+  const [token, setToken] = useState(null); // Add this with your other useState declarations
+
+useEffect(() => {
+  // This runs only on client side
+  const accessToken = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
+  setToken(accessToken);
+  
+  if (!accessToken) {
+    router.push("/login");
+  }
+}, [router]);
+
 
   const fetchPostdata = async () => {
-    if (loading || !hasNext || !inView) return;
+    if (loading || !hasNext || !inView||!token) return;
     // console.log(page);
     setLoading(true);
     try {
