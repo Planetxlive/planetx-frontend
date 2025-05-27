@@ -3,7 +3,7 @@
 import Image from "next/image";
 import logo from "../../../public/logo.png";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { CgProfile } from "react-icons/cg";
 import { Bell, ChevronDown, Menu, X } from "lucide-react";
@@ -20,6 +20,8 @@ export const Navbar = () => {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -60,7 +62,6 @@ export const Navbar = () => {
             if (JSON.stringify(prevIds) !== JSON.stringify(newIds)) {
               return newNotifications;
             }
-            return prev;
           });
           
         } catch (error) {
@@ -107,12 +108,21 @@ export const Navbar = () => {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/show-property?minPrice=0&maxPrice=10000000", label: "All Properties" },
     { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
     { href: "/highlights", label: "Highlights" },
     { href: "/dashboard/wishlist", label: "Wishlist" },
     { href: "/blog", label: "Blog" },
   ];
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setPropertyDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="w-full border-b border-[#E1E1E1] bg-gradient-to-r from-white to-gray-50 sticky top-0 z-50 shadow-sm">
@@ -148,6 +158,49 @@ export const Navbar = () => {
                 )}
               </Link>
             ))}
+            
+            {/* Dropdown for Show Property */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setPropertyDropdownOpen((open) => !open)}
+                className="flex items-center gap-2 text-base font-semibold hover:text-[#4CAF50] transition-all duration-200 hover:scale-105"
+              >
+                Show Property
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {propertyDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-xl shadow-xl z-50">
+                  <Link
+                    href="/show-property?feature=office"
+                    className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                    onClick={() => setPropertyDropdownOpen(false)}
+                  >
+                    Office
+                  </Link>
+                  <Link
+                    href="/show-property?feature=residential"
+                    className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                    onClick={() => setPropertyDropdownOpen(false)}
+                  >
+                    Residential
+                  </Link>
+                  <Link
+                    href="/show-property?feature=gym"
+                    className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                    onClick={() => setPropertyDropdownOpen(false)}
+                  >
+                    Gym
+                  </Link>
+                  <Link
+                    href="/parking"
+                    className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                    onClick={() => setPropertyDropdownOpen(false)}
+                  >
+                    Parking
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2 md:gap-4 relative">
@@ -292,6 +345,62 @@ export const Navbar = () => {
                   )}
                 </Link>
               ))}
+              
+              {/* Mobile Show Property Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setPropertyDropdownOpen((open) => !open)}
+                  className="flex items-center gap-2 text-lg font-semibold text-[#0F0D0D] px-4 py-2 hover:bg-gray-100 rounded-lg"
+                >
+                  Show Property
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                {propertyDropdownOpen && (
+                  <div className="ml-4 grid gap-2">
+                    <Link
+                      href="/show-property?feature=office"
+                      className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
+                      onClick={() => {
+                        setPropertyDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Office
+                    </Link>
+                    <Link
+                      href="/show-property?feature=residential"
+                      className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
+                      onClick={() => {
+                        setPropertyDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Residential
+                    </Link>
+                    <Link
+                      href="/show-property?feature=gym"
+                      className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
+                      onClick={() => {
+                        setPropertyDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Gym
+                    </Link>
+                    <Link
+                      href="/parking"
+                      className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
+                      onClick={() => {
+                        setPropertyDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Parking
+                    </Link>
+                  </div>
+                )}
+              </div>
+              
               {isLoggedIn ? (
                 <div className="space-y-2 px-4">
                   <div className="flex items-center gap-3">
