@@ -1,13 +1,22 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, User, Tag, LocateIcon, LocateFixed, Locate, LandmarkIcon, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 // import { getPostById } from "@/lib/posts"
 import { formatDate } from "@/lib/utils";
 import axios from "axios";
 import BACKEND_URL from "@/lib/BACKEND_URL";
 import { use, useEffect, useState } from "react";
+
+const constructLocation = (location) => {
+  const { city, state, locality } = location;
+  const subLocality = (location.subLocality) === undefined || (location.subLocality) === ""? "": location.subLocality + ", ";
+  const apartment = (location.apartment) === undefined || (location.apartment) === ""? "": location.apartment + ", ";
+  const houseNumber = (location.houseNumber) === undefined || (location.houseNumber) === "" ? "": location.houseNumber + ", ";
+  
+  return `${houseNumber}${apartment}${subLocality}${locality}, ${city}, ${state}.`
+};
 
 export default function BlogPost({ id }) {
   //   console.log(id);
@@ -40,7 +49,16 @@ export default function BlogPost({ id }) {
   }, []);
   if (loading) return <div>loading</div>;
   else {
-    console.log(post);
+    // location: {
+    //   city: { type: String, required: false },
+    //   state: { type: String, required: false },
+    //   locality: { type: String, required: false },
+    //   subLocality: { type: String },
+    //   apartment: { type: String },
+    //   houseNumber: { type: String },
+    // }
+    console.log(post.location)
+    // console.log(constructLocation(post.location));
     return (
       <div className="container max-w-4xl px-4 py-8 md:py-12">
         <div className="w-full flex justify-between">
@@ -82,6 +100,13 @@ export default function BlogPost({ id }) {
         <h1 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl">
           {post.title}
         </h1>
+
+        <div className="mb-8 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center">
+            <MapPin className="mr-1 h-4 w-4"/>
+            {constructLocation(post.location)}
+          </div>
+        </div>
 
         <div className="mb-8 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center">

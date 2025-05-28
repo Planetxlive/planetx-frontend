@@ -15,8 +15,8 @@ import { Button } from "@/components/ui/button"
 const CATEGORIES = [
   "All Posts",
   "Roommate Wanted",
-  "Property for Sale",
-  "Property for Rent",
+  "Property For Sale",
+  "Property For Rent",
   "Community Updates",
   "Market Insights",
 ]

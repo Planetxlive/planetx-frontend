@@ -43,13 +43,12 @@ import { toast } from "@/hooks/use-toast";
 import { getToken } from "@/lib/BACKEND_URL";
 import BACKEND_URL from "@/lib/BACKEND_URL";
 import axios from "axios";
-import { uploadBlogImage } from "@/lib/uploader"
-
+import { uploadBlogImage } from "@/lib/uploader";
 
 const CATEGORIES = [
   "Roommate Wanted",
-  "Property for Sale",
-  "Property for Rent",
+  "Property For Sale",
+  "Property For Rent",
   "Community Updates",
   "Market Insights",
 ];
@@ -78,6 +77,12 @@ const formSchema = z.object({
       "Only JPEG, PNG, and PDF files are allowed"
     )
     .optional(),
+  houseNumber: z.string().optional(),
+  apartment: z.string().optional(),
+  subLocality: z.string().optional(),
+  locality: z.string(),
+  city: z.string(),
+  state: z.string(),
   contactInfo: z
     .string()
     .min(5, "Contact information must be at least 5 characters"),
@@ -95,6 +100,7 @@ const updatePost = async (postId, updateValues) => {
       },
     }
   );
+  return updateRes;
 };
 
 const deletePost = async (postId) => {
@@ -121,6 +127,12 @@ export default function EditPostForm({ post, user }) {
       description: post.description,
       category: post.category,
       contactInfo: post.contactInfo,
+      houseNumber: post.location.houseNumber,
+      apartment: post.location.apartment,
+      subLocality: post.location.subLocality,
+      locality: post.location.locality,
+      city: post.location.city,
+      state: post.location.state,
     },
   });
 
@@ -139,22 +151,32 @@ export default function EditPostForm({ post, user }) {
 
       let updatedPostData = { ...values };
 
-      if (values.image === undefined) {
-        delete updatedPostData["image"];
-      }else if (values.image instanceof File) {
+      // console.log(updatedPostData.image);
+      if (values.image instanceof File) {
         updatedPostData["image"] = await uploadBlogImage(values.image);
+      } else if (values.image === undefined) {
+        delete updatedPostData["image"];
       }
 
+      updatedPostData["location"] = {
+        city: updatedPostData.city,
+        state: updatedPostData.state,
+        locality: updatedPostData.locality,
+        subLocality: updatedPostData.subLocality || "",
+        apartment: updatedPostData.apartment || "",
+        houseNumber: updatedPostData.houseNumber || "",
+      };
+
       console.log(updatedPostData);
-      await updatePost(post._id, updatedPostData)
+      console.log(await updatePost(post._id, updatedPostData));
 
       toast({
         title: "Post updated successfully!",
         description: "Your changes have been saved.",
       });
 
-      router.push(`/blog/${post._id}`)
-      router.refresh()
+      router.push(`/blog/${post._id}`);
+      router.refresh();
     } catch (error) {
       console.error("Error updating post:", error);
       toast({
@@ -243,23 +265,6 @@ export default function EditPostForm({ post, user }) {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter post title" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      Create a compelling title for your post
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="category"
                 render={({ field }) => (
                   <FormItem>
@@ -291,6 +296,23 @@ export default function EditPostForm({ post, user }) {
 
               <FormField
                 control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter post title" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Create a compelling title for your post
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
@@ -309,6 +331,112 @@ export default function EditPostForm({ post, user }) {
                   </FormItem>
                 )}
               />
+
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                {/* // location: {
+    //   city: { type: String, required: false },
+    //   state: { type: String, required: false },
+    //   locality: { type: String, required: false },
+    //   subLocality: { type: String },
+    //   apartment: { type: String },
+    //   houseNumber: { type: String }, */}
+                <FormField
+                  control={form.control}
+                  name="houseNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>House Number (optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter House Number" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        House Number of the location
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="apartment"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apartment (optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Apartment Name" {...field} />
+                      </FormControl>
+                      <FormDescription>Name of the apartment</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="subLocality"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sub Locality (optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Sub Locality" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Sub Locality of the location
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="locality"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Locality</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter Locality" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        Locality of the location
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter City" {...field} />
+                      </FormControl>
+                      <FormDescription>City of the location</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter State" {...field} />
+                      </FormControl>
+                      <FormDescription>State of the location</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </FormItem>
 
               <FormField
                 control={form.control}

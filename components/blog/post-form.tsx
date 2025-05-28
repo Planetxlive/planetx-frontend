@@ -31,7 +31,7 @@ import { toast } from "@/hooks/use-toast";
 import React from "react";
 import axios from "axios";
 import BACKEND_URL from "@/lib/BACKEND_URL";
-import { uploadBlogImage } from "@/lib/uploader"
+import { uploadBlogImage } from "@/lib/uploader";
 
 const createPost = async (postData) => {
   const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
@@ -42,21 +42,29 @@ const createPost = async (postData) => {
     description: postData.description,
     contactInfo: postData.contact,
     image: postData.image,
+    location: {
+      city: postData.city,
+      state: postData.state,
+      locality: postData.locality,
+      subLocality: postData.subLocality || "",
+      apartment: postData.apartment || "",
+      houseNumber: postData.houseNumber || "",
+    },
   };
   const header = {
     headers: {
       Authorization: token,
     },
   };
-  console.log(postData.image)
+  console.log(postData.image);
   const res = await axios.post(`${BACKEND_URL}/blogs/create`, data, header);
   // console.log(res);
 };
 
 const CATEGORIES = [
   "Roommate Wanted",
-  "Property for Sale",
-  "Property for Rent",
+  "Property For Sale",
+  "Property For Rent",
   "Community Updates",
   "Market Insights",
 ];
@@ -84,6 +92,12 @@ const formSchema = z.object({
         ["image/jpeg", "image/png", "application/pdf"].includes(file.type),
       "Only JPEG, PNG, and PDF files are allowed"
     ),
+  houseNumber: z.string().optional(),
+  apartment: z.string().optional(),
+  subLocality: z.string().optional(),
+  locality: z.string(),
+  city: z.string(),
+  state: z.string(),
   contact: z
     .string()
     .min(5, "Contact information must be at least 5 characters"),
@@ -102,6 +116,12 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
       description: "",
       category: "",
       contact: "",
+      houseNumber: "",
+      apartment: "",
+      subLocality: "",
+      locality: "",
+      city: "",
+      state: "",
     },
   });
 
@@ -110,8 +130,8 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
       setIsSubmitting(true);
 
       // Add author information from the authenticated user
-      let imageUrl = ""
-      if(values.image instanceof File){
+      let imageUrl = "";
+      if (values.image instanceof File) {
         imageUrl = await uploadBlogImage(values.image);
       }
       const postData = {
@@ -121,7 +141,8 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
         authorId: user.id,
         date: new Date().toISOString(),
       };
-      
+
+      console.log(postData)
       const newPostId = await createPost(postData);
       // console.log(newPostId)
 
@@ -148,23 +169,6 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
     <Card className="p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Title</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter post title" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Create a compelling title for your post
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name="category"
@@ -198,6 +202,23 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
 
           <FormField
             control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter post title" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Create a compelling title for your post
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="description"
             render={({ field }) => (
               <FormItem>
@@ -217,6 +238,110 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
             )}
           />
 
+          <FormItem>
+            <FormLabel>Location</FormLabel>
+            {/* // location: {
+    //   city: { type: String, required: false },
+    //   state: { type: String, required: false },
+    //   locality: { type: String, required: false },
+    //   subLocality: { type: String },
+    //   apartment: { type: String },
+    //   houseNumber: { type: String }, */}
+            <FormField
+              control={form.control}
+              name="houseNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>House Number (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter House Number" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    House Number of the location
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="apartment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Apartment (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Apartment Name" {...field} />
+                  </FormControl>
+                  <FormDescription>Name of the apartment</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="subLocality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sub Locality (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Sub Locality" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Sub Locality of the location
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="locality"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Locality</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter Locality" {...field} />
+                  </FormControl>
+                  <FormDescription>Locality of the location</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter City" {...field} />
+                  </FormControl>
+                  <FormDescription>City of the location</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter State" {...field} />
+                  </FormControl>
+                  <FormDescription>State of the location</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </FormItem>
+
           <FormField
             control={form.control}
             name="image"
@@ -231,8 +356,8 @@ export function PostForm({ user }: { user: { id: string; name: string } }) {
                     {...field}
                     onChange={(e) => {
                       // Convert FileList to File | undefined
-                      const file = e.target.files?.[0]
-                      field.onChange(file)
+                      const file = e.target.files?.[0];
+                      field.onChange(file);
                     }}
                     value={undefined}
                   />
