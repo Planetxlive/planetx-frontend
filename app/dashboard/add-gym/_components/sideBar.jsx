@@ -9,10 +9,10 @@ import {
   MessageSquare,
   ClipboardList,
   FileText,
-  Dumbbell,
+  Dumbbell
 } from "lucide-react";
 
-export const AppSidebar = () => {
+export const AppSidebarGym = () => {
   const pathname = usePathname();
 
   const sidebarItems = [
@@ -32,7 +32,7 @@ export const AppSidebar = () => {
       href: "/dashboard/add-gym",
     },
     {
-      icon: <FileText className="w-6 h-6" />, // ✅ New My Blogs item
+      icon: <FileText className="w-6 h-6" />,
       label: "My Blogs",
       href: "/dashboard/myBlogs",
     },
@@ -61,6 +61,7 @@ export const AppSidebar = () => {
       label: "Terms & Conditions",
       href: "/dashboard/terms-conditions",
     },
+    
   ];
 
   return (

@@ -21,7 +21,11 @@ export const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
+  // New state for Post Property dropdown (desktop & mobile)
+  const [postPropertyDropdownOpen, setPostPropertyDropdownOpen] = useState(false);
+  
   const dropdownRef = useRef(null);
+  const postPropertyDropdownRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +40,6 @@ export const Navbar = () => {
             headers: { Authorization: token },
           });
           setUser(userResponse.data.user);
-          
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -54,7 +57,6 @@ export const Navbar = () => {
             `${BACKEND_URL}/properties/notification/${userId}`,
             { headers: { Authorization: token } }
           );
-          // Only update state if notifications have changed
           setNotifications((prev) => {
             const prevIds = prev.map((n) => n._id);
             const newNotifications = response.data || [];
@@ -63,9 +65,10 @@ export const Navbar = () => {
               return newNotifications;
             }
           });
-          
         } catch (error) {
-          if(error.response.data.message === "No notifications found for this user."){return}
+          if (error.response?.data?.message === "No notifications found for this user.") {
+            return;
+          }
           console.error("Error fetching notifications:", error);
         } finally {
           setLoading(false);
@@ -75,10 +78,8 @@ export const Navbar = () => {
       fetchUserData();
       fetchNotifications();
 
-      // Set up polling for notifications every 30 seconds
+      // Poll notifications every 30 seconds
       const intervalId = setInterval(fetchNotifications, 30000);
-
-      // Cleanup interval on component unmount
       return () => clearInterval(intervalId);
     }
   }, []);
@@ -97,27 +98,33 @@ export const Navbar = () => {
   const getInitials = (name) => {
     if (!name) return "";
     const words = name.trim().split(" ").filter(Boolean);
-    const initials = words
-      .slice(0, 2)
-      .map((word) => word[0]?.toUpperCase())
-      .join("");
+    const initials = words.slice(0, 2).map((word) => word[0]?.toUpperCase()).join("");
     return initials || "";
   };
 
   const firstName = user?.name?.split(" ")[0] || "User";
 
+  // Remove Post Property from navLinks since it will have its own dropdown
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
     { href: "/highlights", label: "Highlights" },
     { href: "/dashboard/wishlist", label: "Wishlist" },
     { href: "/blog", label: "Blog" },
+  ];
+
+  // Dropdown links for Post Property
+  const postPropertyLinks = [
+    { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
+    { href: "/dashboard/add-gym", label: "Post Gym", badge: "FREE" },
   ];
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setPropertyDropdownOpen(false);
+      }
+      if (postPropertyDropdownRef.current && !postPropertyDropdownRef.current.contains(event.target)) {
+        setPostPropertyDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -151,15 +158,37 @@ export const Navbar = () => {
                 className="flex items-center gap-2 text-base font-semibold hover:text-[#4CAF50] transition-all duration-200 hover:scale-105"
               >
                 {link.label}
-                {link.badge && (
-                  <span className="bg-[#4CAF50] text-white px-2 py-0.5 text-xs rounded-full animate-pulse">
-                    {link.badge}
-                  </span>
-                )}
               </Link>
             ))}
-            
-            {/* Dropdown for Show Property */}
+            {/* New dropdown for Post Property */}
+            <div className="relative" ref={postPropertyDropdownRef}>
+              <button
+                onClick={() => setPostPropertyDropdownOpen((open) => !open)}
+                className="flex items-center gap-2 text-base font-semibold hover:text-[#4CAF50] transition-all duration-200 hover:scale-105"
+              >
+                Post Property
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {postPropertyDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white border rounded-xl shadow-xl z-50">
+                  {postPropertyLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="block px-5 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setPostPropertyDropdownOpen(false)}
+                    >
+                      {link.label} {link.badge && (
+                        <span className="bg-[#4CAF50] text-white px-2 py-0.5 text-xs rounded-full animate-pulse">
+                          {link.badge}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Existing Show Property dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setPropertyDropdownOpen((open) => !open)}
@@ -338,15 +367,40 @@ export const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}
-                  {link.badge && (
-                    <span className="bg-[#4CAF50] text-white px-2 py-0.5 text-xs rounded-full">
-                      {link.badge}
-                    </span>
-                  )}
                 </Link>
               ))}
-              
-              {/* Mobile Show Property Dropdown */}
+              {/* Mobile dropdown for Post Property */}
+              <div className="relative" ref={postPropertyDropdownRef}>
+                <button
+                  onClick={() => setPostPropertyDropdownOpen((open) => !open)}
+                  className="flex items-center gap-2 text-lg font-semibold text-[#0F0D0D] px-4 py-2 hover:bg-gray-100 rounded-lg"
+                >
+                  Post Property
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                {postPropertyDropdownOpen && (
+                  <div className="ml-4 grid gap-2">
+                    {postPropertyLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
+                        onClick={() => {
+                          setPostPropertyDropdownOpen(false);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        {link.label} {link.badge && (
+                          <span className="bg-[#4CAF50] text-white px-2 py-0.5 text-xs rounded-full">
+                            {link.badge}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* Existing Mobile Show Property Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setPropertyDropdownOpen((open) => !open)}
@@ -400,7 +454,6 @@ export const Navbar = () => {
                   </div>
                 )}
               </div>
-              
               {isLoggedIn ? (
                 <div className="space-y-2 px-4">
                   <div className="flex items-center gap-3">
