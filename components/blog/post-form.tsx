@@ -63,8 +63,8 @@ const createPost = async (postData) => {
 
 const CATEGORIES = [
   "Roommate Wanted",
-  "Property for Sale",
-  "Property for Rent",
+  "Property For Sale",
+  "Property For Rent",
   "Community Updates",
   "Market Insights",
 ];
