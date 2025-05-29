@@ -93,7 +93,6 @@ export const PropertyDetailsForm = ({
       setIsSubmitting(false);
     }
   }
-
   return (
     <Card className="w-[835px] bg-white border border-[#E1E1E1] rounded-xl p-5">
       <CardContent className="p-0">
@@ -117,6 +116,7 @@ export const PropertyDetailsForm = ({
                     <FormControl>
                       <div className="relative">
                         <select
+                          value={["Select Type", "For Sale", "For Rent", "Commercial"]}
                           {...field}
                           className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
                         >
@@ -146,6 +146,7 @@ export const PropertyDetailsForm = ({
                         <div className="relative">
                           <select
                             {...field}
+                            value={"Select Category"}
                             className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
                           >
                             <option value="">Select Category</option>
@@ -195,6 +196,7 @@ export const PropertyDetailsForm = ({
                     <FormControl>
                       <div className="relative">
                         <select
+                          value={[]}
                           {...field}
                           className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
                         >
@@ -359,6 +361,7 @@ export const PropertyDetailsForm = ({
                     <FormControl>
                       <div className="relative">
                         <select
+                          value={[...Array(20)]}
                           {...field}
                           className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
                           onChange={(e) =>
