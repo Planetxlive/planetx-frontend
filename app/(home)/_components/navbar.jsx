@@ -116,6 +116,7 @@ export const Navbar = () => {
   const postPropertyLinks = [
     { href: "/dashboard/add-property", label: "Post Property", badge: "FREE" },
     { href: "/dashboard/add-gym", label: "Post Gym", badge: "FREE" },
+    { href: "/dashboard/add-parking", label: "Post Parking", badge: "FREE" },
   ];
 
   useEffect(() => {
@@ -214,7 +215,7 @@ export const Navbar = () => {
                     Residential
                   </Link>
                   <Link
-                    href="/show-property?feature=gym"
+                    href="/gym"
                     className="block px-5 py-3 hover:bg-gray-50 transition-colors"
                     onClick={() => setPropertyDropdownOpen(false)}
                   >
@@ -432,7 +433,7 @@ export const Navbar = () => {
                       Residential
                     </Link>
                     <Link
-                      href="/show-property?feature=gym"
+                      href="/gym"
                       className="block px-5 py-3 hover:bg-gray-50 transition-colors rounded-lg"
                       onClick={() => {
                         setPropertyDropdownOpen(false);

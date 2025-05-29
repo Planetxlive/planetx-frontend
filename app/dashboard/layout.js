@@ -4,17 +4,19 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "./add-property/_components/sideBar";
 import { AppSidebarGym } from "./add-gym/_components/sideBar";
-import { Navbar } from "../(home)/_components/navbar";
+import { AppSidebarParking } from "./add-parking/_components/sideBar";
 
 const Dashboard = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
 
-  // Render gym sidebar if the path starts with /dashboard/add-gym
-  const SidebarComponent =
-    pathname.startsWith("/dashboard/add-gym") && !isSidebarOpen
-      ? AppSidebarGym
-      : AppSidebar;
+  // Select the proper sidebar component based on the current path
+  let SidebarComponent = AppSidebar;
+  if (pathname.startsWith("/dashboard/add-gym") && !isSidebarOpen) {
+    SidebarComponent = AppSidebarGym;
+  } else if (pathname.startsWith("/dashboard/add-parking") && !isSidebarOpen) {
+    SidebarComponent = AppSidebarParking;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5FA]">

@@ -9,7 +9,8 @@ import {
   MessageSquare,
   ClipboardList,
   FileText,
-  Dumbbell
+  Dumbbell,
+  CarFront
 } from "lucide-react";
 
 export const AppSidebarGym = () => {
@@ -30,6 +31,11 @@ export const AppSidebarGym = () => {
       icon: <Dumbbell className="w-6 h-6" />,
       label: "Add Gym",
       href: "/dashboard/add-gym",
+    },
+    {
+      icon: <CarFront className="w-6 h-6" />,
+      label: "Add Parking",
+      href: "/dashboard/add-parking",
     },
     {
       icon: <FileText className="w-6 h-6" />,

@@ -4,7 +4,7 @@ import * as React from "react";
 import { BasicInformation } from "./basic-information";
 import { StepsSection } from "./steps";
 import { Button } from "@/components/ui/button";
-import { PropertyDetailsForm } from "./add-property-details";
+import { PropertyDetailsForm } from "./add-parking-details";
 import { PropertyUpload } from "@/app/dashboard/add-property/_components/property-upload";
 import AmenitiesDetails from "./amenities-details";
 import AddPrice from "./add-price";
@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadPropertyImages, uploadPropertyVideo } from "@/lib/uploader";
 const steps = [
   { number: 1, title: "Basic Information" },
-  { number: 2, title: "Gym Details" },
+  { number: 2, title: "Parking Details" },
   { number: 3, title: "Photos & Video" },
   { number: 4, title: "Amenities" },
   { number: 5, title: "Add Price" },
