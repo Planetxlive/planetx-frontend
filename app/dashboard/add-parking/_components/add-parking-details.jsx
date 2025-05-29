@@ -38,7 +38,7 @@ export const PropertyDetailsForm = ({
   const schema = parkingFormSchema;
   const defaultValues = {
     propertyType: propertyType,
-    category: ["public", "private", "celebrity"],
+    category: ["public", "private"],
     location: {
       city: "",
       state: "",
