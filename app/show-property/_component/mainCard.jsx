@@ -167,6 +167,7 @@ const MainCard = () => {
           );
           const properties = response.data.properties || [];
           setPropertyData(properties.length ? properties : DUMMY_PROPERTIES);
+          console.log(response);
         } else {
           setPropertyData(DUMMY_PROPERTIES);
         }
@@ -176,7 +177,8 @@ const MainCard = () => {
         setLoading(false);
       }
     };
-
+   
+    
     fetchPropertyData();
   }, [searchParams]);
 
@@ -394,7 +396,7 @@ const MainCard = () => {
                   <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
                     <img
                       src={
-                        doc.images?.[0] ||
+                        doc.images?.[0].url ||
                         doc.image ||
                         "/default-property.jpg"
                       }

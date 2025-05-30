@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { CgProfile, CgSearch } from "react-icons/cg";
-import { Bell, ChevronDown, Menu as MenuIcon, X } from "lucide-react";
+import { Bell, ChevronDown, FileText, LayoutDashboard, LogOut, Menu as MenuIcon, User, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import BACKEND_URL from "@/lib/BACKEND_URL";
@@ -20,9 +20,9 @@ const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700
 // Dropdown data with titles, descriptions, and icons
 const featuresDropdown = [
   {
-    href: "/show-property?feature=office",
-    label: "Office",
-    description: "Explore modern office spaces for your business needs.",
+    href: "/show-property",
+    label: "All Properties",
+    description: "Find your dream property like home office hotel or more",
     icon: "🏢",
   },
   {
@@ -448,82 +448,94 @@ export const Navbar = () => {
                 </Menu>
                 {/* User Profile Dropdown */}
                 <Menu as="div" className="relative hidden lg:block">
-                  {({ open }) => (
-                    <>
-                      <Menu.Button
-                        className="flex items-center gap-3 p-2 rounded-full hover:bg-gray-100 transition-all duration-300 -mr-4 sm:-mr-6 lg:-mr-8"
-                        aria-label="Toggle user menu"
-                        aria-expanded={open}
-                      >
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#CED5D8] to-[#A1A8AB] flex items-center justify-center text-white font-medium text-lg shadow-inner">
-                          {getInitials(user?.name)}
-                        </div>
-                        <span className="font-medium text-lg text-gray-800 hidden xl:block">
-                          {firstName}
-                        </span>
-                        <ChevronDown className={`h-5 w-5 text-gray-600 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
-                      </Menu.Button>
-                      <Transition
-                        as={motion.div}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: open ? 1 : 0, y: open ? 0 : -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full right-0 mt-3 w-56 bg-white rounded-lg shadow-xl border border-gray-100 z-50"
-                      >
-                        <Menu.Items static className="focus:outline-none">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                href="/dashboard/profile"
-                                className={`block px-5 py-3 rounded-t-lg transition-colors text-lg ${
-                                  active ? "bg-gray-50" : ""
-                                }`}
-                              >
-                                My Profile
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                href="/dashboard"
-                                className={`block px-5 py-3 transition-colors text-lg ${
-                                  active ? "bg-gray-50" : ""
-                                }`}
-                              >
-                                Dashboard
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                href="/dashboard/myBlogs"
-                                className={`block px-5 py-3 transition-colors text-lg ${
-                                  active ? "bg-gray-50" : ""
-                                }`}
-                              >
-                                My Blogs
-                              </Link>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                onClick={handleLogout}
-                                className={`w-full text-left px-5 py-3 rounded-b-lg transition-colors text-lg text-red-600 ${
-                                  active ? "bg-gray-50" : ""
-                                }`}
-                              >
-                                Logout
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </Menu.Items>
-                      </Transition>
-                    </>
-                  )}
-                </Menu>
+      {({ open }) => (
+        <>
+          <Menu.Button
+            className="group flex items-center gap-3 p-2 rounded-full hover:bg-gray-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 -mr-4 sm:-mr-6 lg:-mr-8"
+            aria-label="Toggle user menu"
+            aria-expanded={open}
+          >
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#CED5D8] to-[#A1A8AB] flex items-center justify-center text-white font-medium text-lg shadow-inner ring-2 ring-gray-200 group-hover:ring-blue-400 transition-all duration-300">
+              {getInitials(user?.name)}
+            </div>
+            <span className="font-medium text-lg text-gray-800 hidden xl:block group-hover:text-blue-600 transition-colors duration-200">
+              {firstName}
+            </span>
+            <ChevronDown
+              className={`h-5 w-5 text-gray-600 group-hover:text-blue-600 transition-all duration-200 ${
+                open ? 'rotate-180' : ''
+              }`}
+            />
+          </Menu.Button>
+          <Transition
+            as={motion.div}
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{
+              opacity: open ? 1 : 0,
+              y: open ? 0 : -10,
+              scale: open ? 1 : 0.95,
+            }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="absolute top-full right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+          >
+            <Menu.Items static className="focus:outline-none">
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/dashboard/profile"
+                    className={`flex items-center gap-3 px-5 py-3 rounded-t-xl text-lg font-medium text-gray-700 transition-all duration-200 ${
+                      active ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <User className="h-5 w-5" />
+                    My Profile
+                  </Link>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/dashboard"
+                    className={`flex items-center gap-3 px-5 py-3 text-lg font-medium text-gray-700 transition-all duration-200 ${
+                      active ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <LayoutDashboard className="h-5 w-5" />
+                    Dashboard
+                  </Link>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <Link
+                    href="/dashboard/myBlogs"
+                    className={`flex items-center gap-3 px-5 py-3 text-lg font-medium text-gray-700 transition-all duration-200 ${
+                      active ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <FileText className="h-5 w-5" />
+                    My Blogs
+                  </Link>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={handleLogout}
+                    className={`flex items-center gap-3 w-full text-left px-5 py-3 rounded-b-xl text-lg font-medium text-red-600 transition-all duration-200 ${
+                      active ? 'bg-red-50 text-red-700' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                  </button>
+                )}
+              </Menu.Item>
+            </Menu.Items>
+          </Transition>
+        </>
+      )}
+    </Menu>
               </>
             ) : (
               <Button
@@ -695,41 +707,45 @@ export const Navbar = () => {
                   Blog
                 </Link>
                 {isLoggedIn ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#CED5D8] to-[#A1A8AB] flex items-center justify-center text-white font-medium text-base">
-                        {getInitials(user?.name)}
-                      </div>
-                      <span className="text-xl font-medium text-gray-700">{firstName}</span>
+                  <div className="space-y-3 px-4 py-6 bg-white shadow-lg rounded-b-xl">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#CED5D8] to-[#A1A8AB] flex items-center justify-center text-white font-medium text-lg shadow-inner ring-2 ring-gray-200">
+                      {getInitials(user?.name)}
                     </div>
-                    <Link
-                      href="/dashboard/profile"
-                      className="block py-2 text-xl font-medium text-gray-700 hover:text-[#4CAF50]"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      My Profile
-                    </Link>
-                    <Link
-                      href="/dashboard"
-                      className="block py-2 text-xl font-medium text-gray-700 hover:text-[#4CAF50]"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
-                    <Link
-                      href="/dashboard/myBlogs"
-                      className="block py-2 text-xl font-medium text-gray-700 hover:text-[#4CAF50]"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      My Blogs
-                    </Link>
-                    <button
-                      onClick={handleLogout}
-                      className="w-full text-left py-2 text-xl font-medium text-red-600 hover:text-red-700"
-                    >
-                      Logout
-                    </button>
+                    <span className="text-xl font-medium text-gray-800">{firstName}</span>
                   </div>
+                  <Link
+                    href="/dashboard/profile"
+                    className="flex items-center gap-3 py-3 px-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User className="h-5 w-5" />
+                    My Profile
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-3 py-3 px-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <LayoutDashboard className="h-5 w-5" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/dashboard/myBlogs"
+                    className="flex items-center gap-3 py-3 px-4 text-lg font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all duration-200"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <FileText className="h-5 w-5" />
+                    My Blogs
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full text-left py-3 px-4 text-lg font-medium text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all duration-200"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Logout
+                  </button>
+                </div>
                 ) : (
                   <Button
                     asChild
