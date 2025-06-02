@@ -114,7 +114,8 @@ const Gym = ({ form }) => {
                   {...field}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
-                    field.onChange(value);
+                    console.log(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>
@@ -139,7 +140,8 @@ const Gym = ({ form }) => {
                   {...field}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
-                    field.onChange(value);
+                    console.log(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>
@@ -216,7 +218,8 @@ const Gym = ({ form }) => {
                   {...field}
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
-                    field.onChange(value);
+                    console.log(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>
@@ -292,8 +295,9 @@ const Gym = ({ form }) => {
                     </Button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {form.getValues("propertyDetails.amenities")?.map(
-                      (amenity) => (
+                    {form
+                      .getValues("propertyDetails.amenities")
+                      ?.map((amenity) => (
                         <div
                           key={amenity}
                           className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full"
@@ -307,8 +311,7 @@ const Gym = ({ form }) => {
                             <X className="h-4 w-4" />
                           </button>
                         </div>
-                      )
-                    )}
+                      ))}
                   </div>
                 </div>
               </FormControl>

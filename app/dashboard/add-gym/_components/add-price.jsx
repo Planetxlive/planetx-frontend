@@ -29,7 +29,7 @@ export default function AddPrice({ propertyData, setPropertyData, setCurrentStep
     try {
       setPropertyData((prevPropertyData) => ({
         ...prevPropertyData,
-        pricing: { ...values },
+        ...values ,
       }));
       setCurrentStep((prev) => prev + 1);
     } catch (error) {

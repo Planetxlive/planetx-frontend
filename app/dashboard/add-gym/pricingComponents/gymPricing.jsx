@@ -15,14 +15,14 @@ import { Button } from "@/components/ui/button";
 
 const GymPricingForm = ({ form }) => {
   const { watch, setValue } = form;
-  const baseMembershipFee = watch("baseMembershipFee");
-  const discount = watch("discount");
-  const taxes = watch("taxes");
+  const baseMembershipFee = watch("pricing.baseMembershipPrice");
+  const discount = watch("pricing.discount");
+  const taxes = watch("pricing.taxes");
 
   useEffect(() => {
     const finalPrice =
       Number(baseMembershipFee) - Number(discount) + Number(taxes);
-    setValue("finalPrice", finalPrice);
+    setValue("pricing.finalPrice", finalPrice);
   }, [baseMembershipFee, discount, taxes, setValue]);
 
   return (
@@ -32,7 +32,7 @@ const GymPricingForm = ({ form }) => {
 
         <FormField
           control={form.control}
-          name="baseMembershipFee"
+          name="pricing.baseMembershipPrice"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Base Membership Fee</FormLabel>
@@ -41,6 +41,11 @@ const GymPricingForm = ({ form }) => {
                   type="number"
                   placeholder="e.g., ₹2000 per month"
                   {...field}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    console.log(value);
+                    field.onChange(value === NaN ? 0 : value);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -50,7 +55,7 @@ const GymPricingForm = ({ form }) => {
 
         <FormField
           control={form.control}
-          name="discount"
+          name="pricing.discount"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Discount</FormLabel>
@@ -59,6 +64,11 @@ const GymPricingForm = ({ form }) => {
                   type="number"
                   placeholder="e.g., ₹500 off for first month"
                   {...field}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    console.log(value);
+                    field.onChange(value === NaN ? 0 : value);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -68,7 +78,7 @@ const GymPricingForm = ({ form }) => {
 
         <FormField
           control={form.control}
-          name="taxes"
+          name="pricing.taxes"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Taxes</FormLabel>
@@ -77,6 +87,11 @@ const GymPricingForm = ({ form }) => {
                   type="number"
                   placeholder="e.g., ₹180 (9% GST)"
                   {...field}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    console.log(value);
+                    field.onChange(value === NaN ? 0 : value);
+                  }}
                 />
               </FormControl>
               <FormMessage />
@@ -86,12 +101,21 @@ const GymPricingForm = ({ form }) => {
 
         <FormField
           control={form.control}
-          name="finalPrice"
+          name="pricing.finalPrice"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Total Payable Amount</FormLabel>
               <FormControl>
-                <Input type="number" disabled {...field} />
+                <Input
+                  type="number"
+                  disabled
+                  {...field}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    console.log(value);
+                    field.onChange(value === NaN ? 0 : value);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

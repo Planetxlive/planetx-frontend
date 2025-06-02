@@ -19,52 +19,77 @@ import { Textarea } from "@/components/ui/textarea";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useSearchParams } from "next/navigation";
-import GymForm from "./_addPropertyComponents/gym"; 
+import GymForm from "./_addPropertyComponents/gym";
 import { GymSchema } from "../_SchemaValidation/gymSchema";
 import SelectButton from "./selectButton";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Sheet } from "@/components/ui/sheet";
 
-export const PropertyDetailsForm = ({
-  setPropertyData,
-  setCurrentStep,
-}) => {
+const statesOfIndia = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+];
+
+export const PropertyDetailsForm = ({ setPropertyData, setCurrentStep }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
-  const propertyType = searchParams.get("propertyType");
+  // const propertyType = searchParams.get("propertyType");
 
- 
   const schema = GymSchema;
   const defaultValues = {
-    propertyType: propertyType,
-    category: ["public", "private", "celebrity"],
-    location: {
-      city: "",
-      state: "",
-      locality: "",
-      subLocality: "",
-      apartment: "",
-      houseNumber: "",
+    city: "",
+    state: "",
+    locality: "",
+    subLocality: "",
+    apartment: "",
+    gymName: "",
+    gymDescription: "",
+    gymType: "",
+    bookingDetails: {
+      operationHours: "",
+      membershipOption: "",
     },
 
-    subCategory: "Public",
-    propertyDetails: {
-      propertyName: "",
-      gymType: "Public",
-      rating: 3,
-      totalMembers: 0,
-      equipmentTypes: "",
-      amenities: [],
-    },
-    membershipDetails: {
-      membershipType: "",
-      pricePerMonth: 0,
-      personalTrainerAvailable: false,
-      groupClassesAvailable: false,
-    },
-    ageOfProperty: 0,
-    description: "",
+    availableStatus: "",
+    capacity: 0,
+    ageOfGym: -1,
+    membershipType: "",
+    equipmentType: "",
   };
 
   const form = useForm({
@@ -105,7 +130,7 @@ export const PropertyDetailsForm = ({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-2 gap-5">
               {/* Property Type */}
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="propertyType"
                 render={({ field }) => (
@@ -131,42 +156,41 @@ export const PropertyDetailsForm = ({
                     <FormMessage className="text-red-500 text-sm" />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               {/* Category */}
               <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
-                        Property Category
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <select
-                            {...field}
-                            value={"Select Category"}
-                            className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
-                          >
-                            <option value="">Select Category</option>
-                            <option value="public">Public</option>
-                            <option value="private">Private</option>
-                            <option value="celebrity">Celebrity</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-[#0F0D0D] pointer-events-none" />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-red-500 text-sm" />
-                    </FormItem>
-                  )}
-                />
-
+                control={form.control}
+                name="gymType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Gym Type
+                    </FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <select
+                          {...field}
+                          // value={"Select Category"}
+                          className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
+                        >
+                          <option value="">Select Category</option>
+                          <option value="Public">Public</option>
+                          <option value="Private">Private</option>
+                          <option value="Celebrity">Celebrity</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-[#0F0D0D] pointer-events-none" />
+                      </div>
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
 
               {/* City */}
               <FormField
                 control={form.control}
-                name="location.city"
+                name="city"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -187,7 +211,7 @@ export const PropertyDetailsForm = ({
               {/* State */}
               <FormField
                 control={form.control}
-                name="location.state"
+                name="state"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -201,6 +225,13 @@ export const PropertyDetailsForm = ({
                           className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
                         >
                           <option value="">Select State</option>
+                          {statesOfIndia.map((val, ind) => {
+                            return (
+                              <option key={ind} value={val}>
+                                {val}
+                              </option>
+                            );
+                          })}
                           {/* State options omitted for brevity */}
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-[#0F0D0D] pointer-events-none" />
@@ -214,7 +245,7 @@ export const PropertyDetailsForm = ({
               {/* Locality / Apartment */}
               <FormField
                 control={form.control}
-                name="location.locality"
+                name="locality"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -235,7 +266,7 @@ export const PropertyDetailsForm = ({
               {/* Sub Locality */}
               <FormField
                 control={form.control}
-                name="location.subLocality"
+                name="subLocality"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -256,7 +287,7 @@ export const PropertyDetailsForm = ({
               {/* Apartment */}
               <FormField
                 control={form.control}
-                name="location.apartment"
+                name="apartment"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -275,9 +306,9 @@ export const PropertyDetailsForm = ({
               />
 
               {/* House Number */}
-              <FormField
+              {/* <FormField
                 control={form.control}
-                name="location.houseNumber"
+                name="apartment"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
@@ -293,87 +324,100 @@ export const PropertyDetailsForm = ({
                     <FormMessage className="text-red-500 text-sm" />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             {/* Gym-specific form component */}
-            <GymForm form={form} />
+            {/* <GymForm form={form} /> */}
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="availabilityStatus"
               render={({ field }) => (
                 <FormItem>
                   <SelectButton
                     name="Availability Status"
-                    options={["Available", "Rented", "Sold", "Under Construction"]}
+                    options={[
+                      "Available",
+                      "Rented",
+                      "Sold",
+                      "Under Construction",
+                    ]}
                     value={field.value}
                     onChange={field.onChange}
                   />
                   <FormMessage className="text-red-500 text-sm" />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <div className="grid grid-cols-2 gap-5">
-              {/* Available From */}
               <FormField
                 control={form.control}
-                name="availableFrom"
-                render={({ field, fieldState: { error } }) => (
-                  <FormItem>
-                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
-                      Available From
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <DatePicker
-                          selected={field.value ? new Date(field.value) : null}
-                          onChange={(date) =>
-                            field.onChange(
-                              date ? date.toISOString().split("T")[0] : ""
-                            )
-                          }
-                          dateFormat="yyyy-MM-dd"
-                          placeholderText="yyyy-mm-dd"
-                          className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#0F0D0D] placeholder-[#9E9E9E] font-poppins focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
-                        />
-                      </div>
-                    </FormControl>
-                    {error && (
-                      <p className="text-red-500 text-sm font-medium mt-1">
-                        {error.message}
-                      </p>
-                    )}
-                  </FormItem>
-                )}
-              />
-
-              {/* Age of Property */}
-              <FormField
-                control={form.control}
-                name="ageOfProperty"
+                name="bookingDetails.operationHours"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
-                      Age of Property
+                      Operational Hours
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter Operational Hours."
+                        className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bookingDetails.membershipOption"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Membership Type
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="focus:outline-none focus:ring-0 focus:border-transparent h-[50px]">
+                          <SelectValue placeholder="Select Membership Type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Basic">Basic</SelectItem>
+                          <SelectItem value="Premium">Premium</SelectItem>
+                          <SelectItem value="VIP">VIP</SelectItem>
+                          <SelectItem value="Corporate">Corporate</SelectItem>
+                          <SelectItem value="Student">Student</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="availableStatus"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Available Status
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <select
-                          value={[...Array(20)]}
                           {...field}
+                          // value={"Select Category"}
                           className="w-full h-[58px] px-[15px] border border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins appearance-none"
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
                         >
-                          <option value="">Select Age of Property</option>
-                          {[...Array(20)].map((_, i) => (
-                            <option key={i} value={i}>
-                              {i} years
-                            </option>
-                          ))}
+                          <option value="">Select Category</option>
+                          <option value="Available">Available</option>
+                          <option value="Not Available">Not Available</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-[#0F0D0D] pointer-events-none" />
                       </div>
@@ -382,12 +426,120 @@ export const PropertyDetailsForm = ({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Capacity
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter Operational Hours."
+                        className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                        {...field}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value, 10);
+                          console.log(value === NaN ? 0 : value);
+                          field.onChange(isNaN(value) ? 0 : value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ageOfGym"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Age Of Gym
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter Operational Hours."
+                        className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                        {...field}
+                        onChange={(e) => {
+                          const value = parseInt(e.target.value, 10);
+                          console.log(value === NaN ? 0 : value);
+                          field.onChange(isNaN(value) ? 0 : value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="membershipType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Membership Type
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter Operational Hours."
+                        className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="equipmentType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                      Equipment Type
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter Operational Hours."
+                        className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-sm" />
+                  </FormItem>
+                )}
+              />
             </div>
+
+            <FormField
+              control={form.control}
+              name="gymName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">
+                    Gym Name
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter Gym Name."
+                      className="h-[58px] px-[15px] border-[#E1E1E1] rounded-lg text-[#9E9E9E] font-poppins"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-500 text-sm" />
+                </FormItem>
+              )}
+            />
 
             {/* Description */}
             <FormField
               control={form.control}
-              name="description"
+              name="gymDescription"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-base font-medium font-poppins text-[#0F0D0D]">

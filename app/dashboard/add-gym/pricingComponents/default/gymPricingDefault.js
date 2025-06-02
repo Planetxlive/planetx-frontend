@@ -1,7 +1,9 @@
 
 export const gymPricingDefaultValues = {
-  basePricePerNight: 0,
-  discountedPrice: 0,
-  taxes: 0,
-  finalPrice: 0,
+pricing: {
+    baseMembershipPrice: -1,
+    discount: -1,
+    taxes: -1,
+    finalPrice: -1,
+  }
 };

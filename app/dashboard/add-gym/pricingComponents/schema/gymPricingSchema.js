@@ -2,23 +2,10 @@
 import { z } from "zod";
 
 export const gymPricingSchema = z.object({
-  basePricePerNight: z.coerce
-    .number({
-      required_error: "Base Price per Night is required",
-      invalid_type_error: "Base Price per Night must be a number",
-    })
-    .gt(0, "gym price per Night should be greate than zero"),
-  discountedPrice: z.coerce
-    .number({
-      invalid_type_error: "Discounted Price must be a number",
-    })
-    .optional(),
-  taxes: z.coerce.number({
-    required_error: "Taxes are required",
-    invalid_type_error: "Taxes must be a number",
-  }),
-  finalPrice: z.coerce.number({
-    required_error: "Final Price is required",
-    invalid_type_error: "Final Price must be a number",
+  pricing: z.object({
+    baseMembershipPrice: z.number().min(0),
+    discount: z.number().min(0).optional(),
+    taxes: z.number().min(0),
+    finalPrice: z.number().min(0),
   }),
 });
