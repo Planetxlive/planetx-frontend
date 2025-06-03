@@ -23,11 +23,11 @@ const DUMMY_GYMS = [
     images: ["/gym1.jpg"],
     accessibility: {
       wheelchairAccessible: true,
-      nearEntrance: true
+      nearEntrance: true,
     },
     coordinates: {
       latitude: 19.076,
-      longitude: 72.8777
+      longitude: 72.8777,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -38,7 +38,7 @@ const DUMMY_GYMS = [
         author: "Alice",
         stars: 4,
         createdAt: new Date(),
-        user: { _id: "user1", name: "Alice" }
+        user: { _id: "user1", name: "Alice" },
       },
       {
         _id: "r2",
@@ -46,14 +46,14 @@ const DUMMY_GYMS = [
         author: "Bob",
         stars: 5,
         createdAt: new Date(),
-        user: { _id: "user2", name: "Bob" }
-      }
+        user: { _id: "user2", name: "Bob" },
+      },
     ],
     owner: {
       name: "Manager Rahul",
       mobile: "+91 12345 67890",
-      whatsappMobile: "+91 12345 67890"
-    }
+      whatsappMobile: "+91 12345 67890",
+    },
   },
   {
     _id: "2",
@@ -68,11 +68,11 @@ const DUMMY_GYMS = [
     images: ["/gym2.jpg"],
     accessibility: {
       wheelchairAccessible: false,
-      nearEntrance: false
+      nearEntrance: false,
     },
     coordinates: {
       latitude: 28.7041,
-      longitude: 77.1025
+      longitude: 77.1025,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -80,8 +80,8 @@ const DUMMY_GYMS = [
     owner: {
       name: "Owner Sameer",
       mobile: "+91 98765 43210",
-      whatsappMobile: "+91 98765 43210"
-    }
+      whatsappMobile: "+91 98765 43210",
+    },
   },
   {
     _id: "3",
@@ -96,11 +96,11 @@ const DUMMY_GYMS = [
     images: ["/gym3.jpg"],
     accessibility: {
       wheelchairAccessible: true,
-      nearEntrance: true
+      nearEntrance: true,
     },
     coordinates: {
       latitude: 12.9716,
-      longitude: 77.5946
+      longitude: 77.5946,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -111,22 +111,22 @@ const DUMMY_GYMS = [
         author: "Charlie",
         stars: 5,
         createdAt: new Date(),
-        user: { _id: "user3", name: "Charlie" }
-      }
+        user: { _id: "user3", name: "Charlie" },
+      },
     ],
     owner: {
       name: "Owner Priya",
       mobile: "+91 11223 44556",
-      whatsappMobile: "+91 11223 44556"
-    }
-  }
+      whatsappMobile: "+91 11223 44556",
+    },
+  },
 ];
 
 export default function ParkingDetailsPage() {
-  const [parking, setParking] = useState<any>(DUMMY_GYMS);
+  const [parking, setParking] = useState(DUMMY_GYMS);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
-    
+
   return (
     <section className="flex-1 p-4 sm:p-6 max-w-full bg-gray-50">
       {/* Search Header */}
@@ -160,71 +160,76 @@ export default function ParkingDetailsPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
             {parking.map((spot) => (
-              <article
-                key={spot._id}
-                className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-xl transition-all duration-300"
-              >
-                {/* Image */}
-                <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
-                  <img
-                    src={spot.images?.[0] || "/default-parking.jpg"}
-                    alt={`Parking spot ${spot.spotNumber}`}
-                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Details */}
-                <div className="flex-1 flex flex-col justify-between gap-2">
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
-                      Spot {spot.spotNumber}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-500">
-                      {spot.location || "Location unknown"}
-                    </p>
-                    <div className="flex gap-2 mt-2 flex-wrap">
-                      <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2 py-1 rounded-full capitalize">
-                        {spot.type || "Unknown"}
-                      </span>
-                      <span className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
-                        Size: {spot.size || "Unknown"}
-                      </span>
-                      {spot.amenities.map((amenity, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize"
-                        >
-                          {amenity.replace(/_/g, " ")}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        spot.isAvailable
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {spot.isAvailable ? "Active" : "Inactive"}
-                    </span>
-                    <Link href={`/gym/${spot._id}`}>
-                      <Button
-                        size="sm"
-                        className="rounded-full bg-teal-600 hover:bg-teal-700 transition-colors px-4"
-                      >
-                        View Details
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </article>
+              <GymEntry key={spot._id} spot={spot} />
             ))}
           </div>
         )}
       </div>
     </section>
+  );
+}
+
+function GymEntry({ spot }) {
+  return (
+    <article
+      className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-xl transition-all duration-300"
+    >
+      {/* Image */}
+      <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
+        <img
+          src={spot.images?.[0] || "/default-parking.jpg"}
+          alt={`Parking spot ${spot.spotNumber}`}
+          className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+          loading="lazy"
+        />
+      </div>
+
+      {/* Details */}
+      <div className="flex-1 flex flex-col justify-between gap-2">
+        <div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+            Spot {spot.spotNumber}
+          </h3>
+          <p className="text-xs sm:text-sm text-gray-500">
+            {spot.location || "Location unknown"}
+          </p>
+          <div className="flex gap-2 mt-2 flex-wrap">
+            <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2 py-1 rounded-full capitalize">
+              {spot.type || "Unknown"}
+            </span>
+            <span className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
+              Size: {spot.size || "Unknown"}
+            </span>
+            {spot.amenities.map((amenity, idx) => (
+              <span
+                key={idx}
+                className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize"
+              >
+                {amenity.replace(/_/g, " ")}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <span
+            className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              spot.isAvailable
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
+          >
+            {spot.isAvailable ? "Active" : "Inactive"}
+          </span>
+          <Link href={`/gym/${spot._id}`}>
+            <Button
+              size="sm"
+              className="rounded-full bg-teal-600 hover:bg-teal-700 transition-colors px-4"
+            >
+              View Details
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </article>
   );
 }
