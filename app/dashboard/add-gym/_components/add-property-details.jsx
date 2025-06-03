@@ -100,7 +100,7 @@ export const PropertyDetailsForm = ({ setPropertyData, setCurrentStep }) => {
   function onSubmit(values) {
     setIsSubmitting(true);
     try {
-      setPropertyData({ ...values });
+      setPropertyData((prev) => {return  {...prev, ...values}});
       toast({
         title: "Success",
         description: "Property added successfully!",

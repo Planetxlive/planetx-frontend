@@ -125,9 +125,16 @@ export function AddPropertyForm() {
     }
 
     try {
+      let imgUrl = []
+      for(let img in imageURLs){
+        imgUrl.push({
+          "name": "image",
+          "url": img
+        })
+      }
       const response = await axios.post(
-        `${BACKEND_URL}/properties/add`,
-        { propertyData, images: imageURLs, video: videoURL },
+        `${BACKEND_URL}/gym/create`,
+        { ...propertyData, images: imgUrl, video: videoURL },
         {
           headers: {
             Authorization: token,
@@ -146,6 +153,7 @@ export function AddPropertyForm() {
 
       setIsSubmitting(false);
       setCurrentStep(1);
+
     } catch (error) {
       console.error("Full error:", error);
 
@@ -224,7 +232,7 @@ export function AddPropertyForm() {
           <div className="text-sm font-medium text-muted-foreground">
             {currentStep} of {steps.length} steps
           </div>
-          {currentStep === 4 ? (
+          {currentStep === 5 ? (
             <SubmitPropertyDialog
               handleSubmit={handleSubmit}
               currentStep={currentStep}
@@ -232,7 +240,7 @@ export function AddPropertyForm() {
           ) : (
             <Button
               onClick={(event) => {
-                setCurrentStep((prev) => Math.min(prev + 1, 4));
+                setCurrentStep((prev) => Math.min(prev + 1, 5));
               }}
               className="bg-[#7B00FF] text-primary-foreground"
             >
