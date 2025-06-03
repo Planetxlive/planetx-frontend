@@ -16,46 +16,25 @@ import LoadingScreen from "./loader";
 import { useToast } from "@/hooks/use-toast";
 import { uploadPropertyImages, uploadPropertyVideo } from "@/lib/uploader";
 const steps = [
-  { number: 1, title: "Basic Information" },
-  { number: 2, title: "Parking Details" },
-  { number: 3, title: "Photos & Video" },
-  { number: 4, title: "Amenities" },
-  { number: 5, title: "Add Price" },
+  { number: 1, title: "Parking Details" },
+  { number: 2, title: "Photos & Video" },
+  { number: 3, title: "Amenities and Features" },
+  { number: 4, title: "Add Price" },
 ];
 
 export function AddPropertyForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = React.useState(1);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [propertyData, setPropertyData] = React.useState({});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [files, setFiles] = React.useState({ images: [], video: null });
-  const [lookingFor, setLookingFor] = React.useState(
-    searchParams.get("lookingFor") || "Buyer"
-  );
-  const [propertyKind, setPropertyKind] = React.useState(
-    searchParams.get("propertyKind") || "Residential"
-  );
-  const [propertyType, setPropertyType] = React.useState(
-    searchParams.get("propertyType") || "For Sale"
-  );
   const { toast } = useToast();
-
-  React.useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    params.set("lookingFor", lookingFor);
-    params.set("propertyKind", propertyKind);
-    params.set("propertyType", propertyType);
-
-    router.push(`?${params.toString()}`, { scroll: false });
-  }, [lookingFor, propertyKind, propertyType]);
+  const [files, setFiles] = React.useState({ images: [], video: null });
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     const formData = new FormData();
-  
+    console.log(propertyData);
     if (Object.keys(propertyData).length === 0) {
       toast({
         title: "Error",
@@ -65,19 +44,20 @@ export function AddPropertyForm() {
       setIsSubmitting(false);
       return;
     }
-  
-    propertyData.role = lookingFor;
     formData.append("propertyData", JSON.stringify(propertyData));
-  
+
     if (files.images.length > 0) {
       files.images.forEach((image, index) => {
         formData.append(`images-${index}`, image);
       });
     }
-    const imageResponse = await uploadPropertyImages(formData, files.images.length);
+    const imageResponse = await uploadPropertyImages(
+      formData,
+      files.images.length
+    );
     console.log("imageResponse: ", imageResponse);
     const imageResponseData = JSON.parse(imageResponse);
-    if(!imageResponseData.success){
+    if (!imageResponseData.success) {
       toast({
         title: "Error",
         description: imageResponseData.error,
@@ -87,23 +67,6 @@ export function AddPropertyForm() {
       return;
     }
     const imageURLs = imageResponseData.imageURLs;
-
-    if (files.video) {
-      formData.append(`video`, files.video);
-    }
-    const videoResponse = await uploadPropertyVideo(formData);
-    console.log("videoResponse: ", videoResponse);
-    const videoResponseData = JSON.parse(videoResponse);
-    if(!videoResponseData.success){
-      toast({
-        title: "Error",
-        description: videoResponseData.error,
-        variant: "destructive",
-      });
-    }
-    const videoURL = videoResponseData.videoURL;
-
-
 
     let token = localStorage.getItem("accessToken");
     if (!token) {
@@ -116,7 +79,7 @@ export function AddPropertyForm() {
       return;
     }
     token = token.replace(/^"|"$/g, "");
-  
+
     console.log("Submitting property with data:", propertyData);
     console.log("FormData entries:");
     for (let pair of formData.entries()) {
@@ -125,8 +88,8 @@ export function AddPropertyForm() {
 
     try {
       const response = await axios.post(
-        `${BACKEND_URL}/properties/add`,
-        {propertyData, images: imageURLs, video: videoURL},
+        `${BACKEND_URL}/Parking/create`,
+        { ...propertyData, images: imageURLs },
         {
           headers: {
             Authorization: token,
@@ -134,20 +97,20 @@ export function AddPropertyForm() {
           },
         }
       );
-  
-    console.log(response.data);
+
+      console.log(response.data);
 
       toast({
         title: "Success",
         description: "Property added successfully!",
         variant: "default",
       });
-  
+
       setIsSubmitting(false);
       setCurrentStep(1);
     } catch (error) {
       console.error("Full error:", error);
-  
+
       if (error.response) {
         console.error("Response data:", error.response.data);
         console.error("Status code:", error.response.status);
@@ -156,7 +119,7 @@ export function AddPropertyForm() {
       } else {
         console.error("Error setting up request:", error.message);
       }
-  
+
       toast({
         title: "Error",
         description: error.response?.data?.message || "Failed to add property",
@@ -166,7 +129,6 @@ export function AddPropertyForm() {
       setIsSubmitting(false);
     }
   };
-  
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
@@ -174,7 +136,7 @@ export function AddPropertyForm() {
       <div className="flex-1 space-y-8">
         <div>
           {isSubmitting && <LoadingScreen />}
-          {currentStep === 1 && (
+          {/* {currentStep === 1 && (
             <BasicInformation
               lookingFor={lookingFor}
               setLookingFor={setLookingFor}
@@ -183,8 +145,8 @@ export function AddPropertyForm() {
               propertyType={propertyType}
               setPropertyType={setPropertyType}
             />
-          )}
-          {currentStep === 2 && (
+          )} */}
+          {currentStep === 1 && (
             <PropertyDetailsForm
               propertyData={propertyData}
               setPropertyData={setPropertyData}
@@ -192,7 +154,7 @@ export function AddPropertyForm() {
               setCurrentStep={setCurrentStep}
             />
           )}
-          {currentStep === 3 && (
+          {currentStep === 2 && (
             <div className="max-w-[835px] max-h-[14475px]">
               <PropertyUpload
                 files={files}
@@ -202,7 +164,7 @@ export function AddPropertyForm() {
               />
             </div>
           )}
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <AmenitiesDetails
               propertyData={propertyData}
               setCurrentStep={setCurrentStep}
@@ -210,7 +172,7 @@ export function AddPropertyForm() {
             />
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <AddPrice
               propertyData={propertyData}
               setPropertyData={setPropertyData}
@@ -223,7 +185,7 @@ export function AddPropertyForm() {
           <div className="text-sm font-medium text-muted-foreground">
             {currentStep} of {steps.length} steps
           </div>
-          {currentStep === 6 ? (
+          {currentStep === 5 ? (
             <SubmitPropertyDialog
               handleSubmit={handleSubmit}
               currentStep={currentStep}

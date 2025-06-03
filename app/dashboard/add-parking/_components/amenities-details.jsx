@@ -10,8 +10,9 @@ import { Form } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
 import ParkingAmenitiesForm from "../_amentiesComponents/parkingAmenities";
-import { parkingFormSchema } from "../_amentiesComponents/_schema/parkingFormSchema";
 import { parkingDefaults } from "../_amentiesComponents/default/parkingDefault";
+
+import parkingAmenitiesSchema from "../_SchemaValidation/amenitiesSchema"
 
 export default function ParkingAmenitiesDetails({
   propertyData,
@@ -21,7 +22,7 @@ export default function ParkingAmenitiesDetails({
   const { toast } = useToast();
 
   const form = useForm({
-    resolver: zodResolver(parkingFormSchema),
+    resolver: zodResolver(parkingAmenitiesSchema),
     defaultValues: parkingDefaults,
   });
 

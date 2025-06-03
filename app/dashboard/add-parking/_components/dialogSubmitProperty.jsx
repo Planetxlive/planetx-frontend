@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default function SubmitPropertyDialog({ handleSubmit, currentStep }) {
-  const [open, setOpen] = useState(currentStep === 6);
+  const [open, setOpen] = useState(currentStep === 5);
   console.log(currentStep);
   return (
     <>

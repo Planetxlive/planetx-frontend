@@ -4,7 +4,7 @@ import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import ParkingPricingForm from "../pricingComponents/parkingPricing";
 import { parkingPricingDefaultValues } from "../pricingComponents/default/parkingPricingDefault";
-import { parkingPricingSchema } from "../pricingComponents/schema/parkingPricingSchema";
+import parkingPricingSchema from "../_SchemaValidation/pricingSchema";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 
 export default function AddPrice({ propertyData, setPropertyData, setCurrentStep }) {
-  const searchParams = useSearchParams();
+
 
   const { toast } = useToast();
 
@@ -29,7 +29,7 @@ export default function AddPrice({ propertyData, setPropertyData, setCurrentStep
     try {
       setPropertyData((prevPropertyData) => ({
         ...prevPropertyData,
-        pricing: { ...values },
+        ...values,
       }));
       setCurrentStep((prev) => prev + 1);
     } catch (error) {

@@ -44,7 +44,7 @@ const GymPricingForm = ({ form }) => {
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
                     console.log(value);
-                    field.onChange(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value)? 0 : value);
                   }}
                 />
               </FormControl>
@@ -67,7 +67,7 @@ const GymPricingForm = ({ form }) => {
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
                     console.log(value);
-                    field.onChange(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>
@@ -90,7 +90,7 @@ const GymPricingForm = ({ form }) => {
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
                     console.log(value);
-                    field.onChange(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>
@@ -113,7 +113,7 @@ const GymPricingForm = ({ form }) => {
                   onChange={(e) => {
                     const value = parseInt(e.target.value, 10);
                     console.log(value);
-                    field.onChange(value === NaN ? 0 : value);
+                    field.onChange(isNaN(value) ? 0 : value);
                   }}
                 />
               </FormControl>

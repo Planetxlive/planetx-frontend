@@ -13,91 +13,6 @@ import { Button } from "@/components/ui/button";
 const ParkingAmenitiesForm = ({ form }) => {
   return (
     <div className="space-y-8">
-      {/* Spot Information */}
-      <div className="space-y-5">
-        <h3 className="text-xl font-semibold">Spot Information</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { name: "spotNumber", placeholder: "Spot Number" },
-            { name: "location", placeholder: "Full Address / Location" },
-            { name: "city", placeholder: "City" },
-            { name: "state", placeholder: "State" },
-            { name: "locality", placeholder: "Locality" },
-            { name: "sublocality", placeholder: "Sublocality (optional)" },
-            { name: "areaNumber", placeholder: "Area Number (optional)" },
-            { name: "hourlyRate", placeholder: "Hourly Rate (in $)" },
-          ].map(({ name, placeholder }) => (
-            <FormField
-              key={name}
-              control={form.control}
-              name={name}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="capitalize">{name}</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={placeholder}
-                      className="h-[50px] px-[15px] border-[#E1E1E1] rounded-lg"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Parking Type & Size */}
-      <div className="space-y-5">
-        <h3 className="text-xl font-semibold">Type & Size</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="h-[50px] w-full px-[15px] border-[#E1E1E1] rounded-lg"
-                  >
-                    <option value="standard">Standard</option>
-                    <option value="disabled">Disabled</option>
-                    <option value="electric">Electric</option>
-                    <option value="compact">Compact</option>
-                    <option value="premium">Premium</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="size"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Size</FormLabel>
-                <FormControl>
-                  <select
-                    {...field}
-                    className="h-[50px] w-full px-[15px] border-[#E1E1E1] rounded-lg"
-                  >
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-      </div>
-
       {/* Amenities Details */}
       <div className="space-y-5">
         <h3 className="text-xl font-semibold">Amenities</h3>
@@ -187,14 +102,17 @@ const ParkingAmenitiesForm = ({ form }) => {
               name={name}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="capitalize">
-                    {placeholder}
-                  </FormLabel>
+                  <FormLabel className="capitalize">{placeholder}</FormLabel>
                   <FormControl>
                     <Input
                       placeholder={placeholder}
                       className="h-[50px] px-[15px] border-[#E1E1E1] rounded-lg"
                       {...field}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        console.log(value);
+                        field.onChange(isNaN(value)? 0 : value);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
