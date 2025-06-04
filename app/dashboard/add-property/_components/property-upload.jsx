@@ -13,6 +13,7 @@ import { uploadPropertyImages, uploadPropertyVideo } from "@/lib/uploader";
 
 // Validation schema
 const formSchema = z.object({
+  video: z.array(z.custom()).min(1, "Please upload a property video"),
   images: z.array(z.custom()).min(5, "Please upload at least 5 images"),
 });
 
@@ -25,6 +26,7 @@ export const PropertyUpload = ({
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      video: [],
       images: [],
     },
   });
@@ -38,7 +40,8 @@ export const PropertyUpload = ({
       // }));
 
       setFiles({
-        images: data.images
+         video: data.video[0],
+        images: data.images,
       });
 
       toast({
@@ -46,7 +49,7 @@ export const PropertyUpload = ({
         description: "Property media uploaded successfully.",
       });
 
-      setCurrentStep((prev) => prev + 1)
+      setCurrentStep((prev) => prev + 1);
       // Navigate to the next step after state is updated
     } catch (error) {
       console.log(error);
@@ -76,6 +79,22 @@ export const PropertyUpload = ({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FileUpload
+            title="Property Video"
+            description="Add One Property Video for Highlight"
+            helperText="Max Duration of video 60 Seconds, Max size 10mb"
+            accept={{
+              "video/*": [".mp4", ".mov", ".avi"],
+            }}
+            maxSize={10 * 1024 * 1024} // 10MB
+            maxDuration={60}
+            Add
+            commentMore
+            actions
+            value={form.watch("video")}
+            onChange={(files) => form.setValue("video", files)}
+            maxFiles={1}
+          />
 
           <FileUpload
             title="Property images"

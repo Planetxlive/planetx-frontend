@@ -68,6 +68,21 @@ export function AddPropertyForm() {
     }
     const imageURLs = imageResponseData.imageURLs;
 
+    if (files.video) {
+      formData.append(`video`, files.video);
+    }
+    const videoResponse = await uploadPropertyVideo(formData);
+    console.log("videoResponse: ", videoResponse);
+    const videoResponseData = JSON.parse(videoResponse);
+    if (!videoResponseData.success) {
+      toast({
+        title: "Error",
+        description: videoResponseData.error,
+        variant: "destructive",
+      });
+    }
+    const videoURL = videoResponseData.videoURL;
+
     let token = localStorage.getItem("accessToken");
     if (!token) {
       toast({
@@ -89,7 +104,7 @@ export function AddPropertyForm() {
     try {
       const response = await axios.post(
         `${BACKEND_URL}/Parking/create`,
-        { ...propertyData, images: imageURLs },
+        { ...propertyData, images: imageURLs, video: videoURL },
         {
           headers: {
             Authorization: token,
