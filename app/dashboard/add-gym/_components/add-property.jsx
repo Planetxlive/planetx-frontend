@@ -127,9 +127,10 @@ export function AddPropertyForm() {
     try {
       let imgUrl = []
       for(let img in imageURLs){
+        console.log(img)
         imgUrl.push({
           "name": "image",
-          "url": img
+          "url": imageURLs[img]
         })
       }
       const response = await axios.post(

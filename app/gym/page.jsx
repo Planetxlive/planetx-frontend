@@ -7,125 +7,169 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Search, Heart, Star, X } from "lucide-react";
 import axios from "axios";
 import BACKEND_URL from "@/lib/BACKEND_URL";
+import { getToken } from "@/lib/BACKEND_URL";
 
 // Dummy Parking Data based on your parking schema
 const DUMMY_GYMS = [
   {
-    _id: "1",
-    userId: "user1",
-    spotNumber: "Fitness First Downtown",
-    location: "1st Floor, Downtown Plaza, MG Road",
-    type: "unisex", // can be 'unisex', 'men-only', 'women-only'
-    isAvailable: true,
-    hourlyRate: 200,
-    size: "large", // can be 'small', 'medium', 'large'
-    amenities: ["ac", "personal_trainer", "steam", "locker_room"],
-    images: ["/gym1.jpg"],
-    accessibility: {
-      wheelchairAccessible: true,
-      nearEntrance: true,
+    bookingDetails: {
+      operationHours: "",
+      membershipOption: "",
     },
-    coordinates: {
-      latitude: 19.076,
-      longitude: 72.8777,
+    pricing: {
+      baseMembershipPrice: 6000,
+      discount: 300,
+      taxes: 500,
+      finalPrice: 6200,
     },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    reviews: [
+    _id: "684032125c0591e43f94d3de",
+    userId: "68380c9c190009faa015e996",
+    gymType: "Private",
+    city: "gfdfdgfdgdf",
+    state: "Assam",
+    locality: "",
+    subLocality: "",
+    apartment: "",
+    gymName: "sdfsadfasdfasdfasdfasdfas",
+    gymDescription: "sdfasdfasdfasdfasdfasdfsdfasdfasdfasdfasdfsdafsadf",
+    images: [
       {
-        _id: "r1",
-        text: "Well-maintained gym with great trainers.",
-        author: "Alice",
-        stars: 4,
-        createdAt: new Date(),
-        user: { _id: "user1", name: "Alice" },
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/geometric-art-death-note-l-a0f50blxsyo5it28.jpg",
+        _id: "684032125c0591e43f94d3df",
       },
       {
-        _id: "r2",
-        text: "Clean and spacious. Loved the steam room!",
-        author: "Bob",
-        stars: 5,
-        createdAt: new Date(),
-        user: { _id: "user2", name: "Bob" },
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img1.jpeg",
+        _id: "684032125c0591e43f94d3e0",
       },
-    ],
-    owner: {
-      name: "Manager Rahul",
-      mobile: "+91 12345 67890",
-      whatsappMobile: "+91 12345 67890",
-    },
-  },
-  {
-    _id: "2",
-    userId: "user2",
-    spotNumber: "Muscle House Gym",
-    location: "2nd Floor, Galaxy Mall, Andheri",
-    type: "men-only",
-    isAvailable: false,
-    hourlyRate: 150,
-    size: "medium",
-    amenities: ["weights", "cardio", "locker_room"],
-    images: ["/gym2.jpg"],
-    accessibility: {
-      wheelchairAccessible: false,
-      nearEntrance: false,
-    },
-    coordinates: {
-      latitude: 28.7041,
-      longitude: 77.1025,
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    reviews: [],
-    owner: {
-      name: "Owner Sameer",
-      mobile: "+91 98765 43210",
-      whatsappMobile: "+91 98765 43210",
-    },
-  },
-  {
-    _id: "3",
-    userId: "user3",
-    spotNumber: "Zen Fit Studio",
-    location: "3rd Floor, Indiranagar Complex, Bangalore",
-    type: "women-only",
-    isAvailable: true,
-    hourlyRate: 250,
-    size: "small",
-    amenities: ["yoga", "zumba", "ac", "locker_room"],
-    images: ["/gym3.jpg"],
-    accessibility: {
-      wheelchairAccessible: true,
-      nearEntrance: true,
-    },
-    coordinates: {
-      latitude: 12.9716,
-      longitude: 77.5946,
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    reviews: [
       {
-        _id: "r3",
-        text: "Perfect for yoga and wellness. Peaceful ambiance.",
-        author: "Charlie",
-        stars: 5,
-        createdAt: new Date(),
-        user: { _id: "user3", name: "Charlie" },
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img2.jpeg",
+        _id: "684032125c0591e43f94d3e1",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img3.jpeg",
+        _id: "684032125c0591e43f94d3e2",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/sololeveling6816.jpg",
+        _id: "684032125c0591e43f94d3e3",
       },
     ],
-    owner: {
-      name: "Owner Priya",
-      mobile: "+91 11223 44556",
-      whatsappMobile: "+91 11223 44556",
+    video:
+      "https://planet-x-backend.s3.ap-south-1.amazonaws.com/bhuvneshwar_kumar_ball_2_-_made_with_clipchamp.mp4",
+    capacity: 54545,
+    equipmentType: "sdfsdfsadfasdfsdfsadf",
+    membershipType: "dfdfdfasdfasdfasdfsadfsa",
+    amenitites: [
+      "gfdggfhgfhgsdfgsdfg",
+      "sadfsadfsadfsadfaf",
+      "dfasdfasdfsadfsadfas",
+    ],
+    availableStatus: "Available",
+    ageOfGym: 20,
+    gymEquipment: [],
+    facilities: [],
+    trainerServices: [
+      "fsdfsadfsadfasfsadfasdf",
+      "asdfsadfasdfasfasdfadsfsdafds",
+      "sdfsdfsadfasfsad",
+    ],
+    rules: ["sdfsdfsadfasfs", "fsadfasdfsaf"],
+    additionalFeatures: ["fsdfsdafasfasf"],
+    __v: 0,
+  },
+  {
+    bookingDetails: {
+      operationHours: "",
+      membershipOption: "",
     },
+    pricing: {
+      baseMembershipPrice: 5000,
+      discount: 300,
+      taxes: 200,
+      finalPrice: 4900,
+    },
+    _id: "684032885c0591e43f94d3f8",
+    userId: "68380c9c190009faa015e996",
+    gymType: "Celebrity",
+    city: "sdfsdfsdfsdafsad",
+    state: "Uttar Pradesh",
+    locality: "",
+    subLocality: "",
+    apartment: "",
+    gymName: "fghgfhfghfghgfhgfgfhgfhgfhgfhfgh",
+    gymDescription: "hgfhgfhfhtrtrgregrhtrjuyujyutytuj",
+    images: [
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/geometric-art-death-note-l-a0f50blxsyo5it28.jpg",
+        _id: "684032885c0591e43f94d3f9",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img1.jpeg",
+        _id: "684032885c0591e43f94d3fa",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img2.jpeg",
+        _id: "684032885c0591e43f94d3fb",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/img3.jpeg",
+        _id: "684032885c0591e43f94d3fc",
+      },
+      {
+        name: "image",
+        url: "https://planet-x-backend.s3.ap-south-1.amazonaws.com/sololeveling6816.jpg",
+        _id: "684032885c0591e43f94d3fd",
+      },
+    ],
+    video:
+      "https://planet-x-backend.s3.ap-south-1.amazonaws.com/bhuvneshwar_kumar_ball_2_-_made_with_clipchamp.mp4",
+    capacity: 250,
+    equipmentType: "fghgfhfghgfhfh",
+    membershipType: "gfhgfhgfhfghf",
+    amenitites: [
+      "dfdsfsdfsdafsdafsadfsaf",
+      "sdfsdfsdafsadfsadf",
+      "fsdfsdafafsadfsadfaf",
+      "fdsfsdafsadfsafsaf",
+    ],
+    availableStatus: "Available",
+    ageOfGym: 2,
+    gymEquipment: ["fsdfgfhgfhjgfgjgfjgf", "fdsfasdfasdfasdfsaf"],
+    facilities: ["fsdfsadfsdafasdfsadfasdfadf", "sdfsadfasdfsdfasf"],
+    trainerServices: ["sadfsdfsdfsdfsadfsadf", "sdfasdfasdfasdfasdfsfs"],
+    rules: [],
+    additionalFeatures: ["sdfsdfsdfasdf", "sdfsdafsadf"],
+    __v: 0,
   },
 ];
 
-export default function ParkingDetailsPage() {
-  const [parking, setParking] = useState(DUMMY_GYMS);
+export default function GymDetailsPage() {
+  const [parking, setParking] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const process = async () => {
+      const token = getToken();
+      const res = await axios.get(`${BACKEND_URL}/gym/`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log(res.data.gyms);
+      setParking(res.data.gyms)
+    };
+    process();
+  }, []);
 
   return (
     <section className="flex-1 p-4 sm:p-6 max-w-full bg-gray-50">
@@ -169,16 +213,33 @@ export default function ParkingDetailsPage() {
   );
 }
 
+function getAddressFromSpot(spot) {
+  const apartment =
+    spot.apartment === undefined || spot.apartment === ""
+      ? ""
+      : spot.apartment + ", ";
+  const subLocality =
+    spot.subLocality === undefined || spot.subLocality === ""
+      ? ""
+      : spot.subLocality + ", ";
+  const locality =
+    spot.locality === undefined || spot.locality === ""
+      ? ""
+      : spot.locality + ", ";
+  const city =
+    spot.city === undefined || spot.city === "" ? "" : spot.city + ", ";
+  const state = spot.state === undefined || spot.state === "" ? "" : spot.state;
+  return `${apartment}${subLocality}${locality}${city}${state}`;
+}
+
 function GymEntry({ spot }) {
   return (
-    <article
-      className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-xl transition-all duration-300"
-    >
+    <article className="bg-white border border-gray-100 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 shadow-sm hover:shadow-xl transition-all duration-300">
       {/* Image */}
       <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
         <img
-          src={spot.images?.[0] || "/default-parking.jpg"}
-          alt={`Parking spot ${spot.spotNumber}`}
+          src={spot.images?.[0].url || "/default-parking.jpg"}
+          alt={`Parking spot ${spot.gymName}`}
           className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
           loading="lazy"
         />
@@ -188,22 +249,30 @@ function GymEntry({ spot }) {
       <div className="flex-1 flex flex-col justify-between gap-2">
         <div>
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
-            Spot {spot.spotNumber}
+            Gym {spot.gymName}
           </h3>
           <p className="text-xs sm:text-sm text-gray-500">
-            {spot.location || "Location unknown"}
+            {getAddressFromSpot(spot) || "Location unknown"}
           </p>
           <div className="flex gap-2 mt-2 flex-wrap">
             <span className="text-xs text-teal-600 font-medium bg-teal-50 px-2 py-1 rounded-full capitalize">
-              {spot.type || "Unknown"}
+              {spot.gymType || "Unknown"}
             </span>
             <span className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
-              Size: {spot.size || "Unknown"}
+              Capacity: {spot.capacity || "Unknown"}
             </span>
-            {spot.amenities.map((amenity, idx) => (
+            {spot.amenitites.map((amenity, idx) => (
               <span
                 key={idx}
                 className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize"
+              >
+                {amenity.replace(/_/g, " ")}
+              </span>
+            ))}
+            {spot.trainerServices.map((amenity, idx) => (
+              <span
+                key={idx}
+                className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-1 rounded-full capitalize"
               >
                 {amenity.replace(/_/g, " ")}
               </span>
@@ -213,12 +282,12 @@ function GymEntry({ spot }) {
         <div className="mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <span
             className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              spot.isAvailable
+              spot.availableStatus === "Available"
                 ? "bg-green-100 text-green-800"
                 : "bg-red-100 text-red-800"
             }`}
           >
-            {spot.isAvailable ? "Active" : "Inactive"}
+            {spot.availableStatus === "Available" ? "Active" : "Inactive"}
           </span>
           <Link href={`/gym/${spot._id}`}>
             <Button
