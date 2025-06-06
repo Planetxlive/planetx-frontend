@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -19,6 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
+import BACKEND_URL, { getToken } from "@/lib/BACKEND_URL";
+import axios from "axios";
+import { object } from "zod";
 
 type Review = {
   _id: string;
@@ -54,7 +57,7 @@ type Gym = {
   owner: Owner;
 };
 
-// Dummy Parking Data
+// Dummy Gym Data
 const DUMMY_GYMS: Gym[] = [
   {
     _id: "1",
@@ -69,11 +72,11 @@ const DUMMY_GYMS: Gym[] = [
     images: ["/gym1.jpg"],
     accessibility: {
       wheelchairAccessible: true,
-      nearEntrance: true
+      nearEntrance: true,
     },
     coordinates: {
       latitude: 19.076,
-      longitude: 72.8777
+      longitude: 72.8777,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -84,7 +87,7 @@ const DUMMY_GYMS: Gym[] = [
         author: "Alice",
         stars: 4,
         createdAt: new Date(),
-        user: { _id: "user1", name: "Alice" }
+        user: { _id: "user1", name: "Alice" },
       },
       {
         _id: "r2",
@@ -92,14 +95,14 @@ const DUMMY_GYMS: Gym[] = [
         author: "Bob",
         stars: 5,
         createdAt: new Date(),
-        user: { _id: "user2", name: "Bob" }
-      }
+        user: { _id: "user2", name: "Bob" },
+      },
     ],
     owner: {
       name: "Manager Rahul",
       mobile: "+91 12345 67890",
-      whatsappMobile: "+91 12345 67890"
-    }
+      whatsappMobile: "+91 12345 67890",
+    },
   },
   {
     _id: "2",
@@ -114,11 +117,11 @@ const DUMMY_GYMS: Gym[] = [
     images: ["/gym2.jpg"],
     accessibility: {
       wheelchairAccessible: false,
-      nearEntrance: false
+      nearEntrance: false,
     },
     coordinates: {
       latitude: 28.7041,
-      longitude: 77.1025
+      longitude: 77.1025,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -126,8 +129,8 @@ const DUMMY_GYMS: Gym[] = [
     owner: {
       name: "Owner Sameer",
       mobile: "+91 98765 43210",
-      whatsappMobile: "+91 98765 43210"
-    }
+      whatsappMobile: "+91 98765 43210",
+    },
   },
   {
     _id: "3",
@@ -142,11 +145,11 @@ const DUMMY_GYMS: Gym[] = [
     images: ["/gym3.jpg"],
     accessibility: {
       wheelchairAccessible: true,
-      nearEntrance: true
+      nearEntrance: true,
     },
     coordinates: {
       latitude: 12.9716,
-      longitude: 77.5946
+      longitude: 77.5946,
     },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -157,34 +160,40 @@ const DUMMY_GYMS: Gym[] = [
         author: "Charlie",
         stars: 5,
         createdAt: new Date(),
-        user: { _id: "user3", name: "Charlie" }
-      }
+        user: { _id: "user3", name: "Charlie" },
+      },
     ],
     owner: {
       name: "Owner Priya",
       mobile: "+91 11223 44556",
-      whatsappMobile: "+91 11223 44556"
-    }
-  }
+      whatsappMobile: "+91 11223 44556",
+    },
+  },
 ];
 
+function getAddressFromSpot(spot) {
+  const apartment =
+    spot.apartment === undefined || spot.apartment === ""
+      ? ""
+      : spot.apartment + ", ";
+  const subLocality =
+    spot.subLocality === undefined || spot.subLocality === ""
+      ? ""
+      : spot.subLocality + ", ";
+  const locality =
+    spot.locality === undefined || spot.locality === ""
+      ? ""
+      : spot.locality + ", ";
+  const city =
+    spot.city === undefined || spot.city === "" ? "" : spot.city + ", ";
+  const state = spot.state === undefined || spot.state === "" ? "" : spot.state;
+  return `${apartment}${subLocality}${locality}${city}${state}`;
+}
 
-export default function ParkingDetailsPage() {
+export default function GymDetailsPage() {
   const { id } = useParams();
   const toast = useToast();
-  const parking = DUMMY_GYMS.find((p) => p._id === id);
-
-  // Early return if parking not found.
-  if (!parking) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
-        <h2 className="text-3xl font-bold mb-6 text-center">
-          Parking spot not found.
-        </h2>
-      </div>
-    );
-  }
-
+  const [gym, setGym] = useState({});
   const [activeTab, setActiveTab] = useState("about");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -197,21 +206,56 @@ export default function ParkingDetailsPage() {
   const [userRating, setUserRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
-  const [reviews, setReviews] = useState<Review[]>(parking.reviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [userId] = useState("dummyUser");
+  const [loading, setLoading] = useState(false);
+  // const gym = DUMMY_GYMS.find((p) => p._id === id);
+
+  useEffect(() => {
+    setLoading(true);
+    const process = async () => {
+      const token = getToken();
+      const res = await axios.get(`${BACKEND_URL}/gym/${id}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      console.log(res);
+      setGym(res.data.gym);
+      setLoading(false);
+    };
+    process();
+  }, []);
+  // Early return if gym not found.
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+        <h2 className="text-3xl font-bold mb-6 text-center">Loading</h2>
+      </div>
+    );
+  }
+  if (gym === undefined || Object.keys(gym).length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          Gym spot not found.
+        </h2>
+      </div>
+    );
+  }
 
   const nextImage = () => {
-    if (parking.images.length > 0) {
+    if (gym.images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === parking.images.length - 1 ? 0 : prev + 1
+        prev === gym.images.length - 1 ? 0 : prev + 1
       );
     }
   };
 
   const prevImage = () => {
-    if (parking.images.length > 0) {
+    if (gym.images.length > 0) {
       setCurrentImageIndex((prev) =>
-        prev === 0 ? parking.images.length - 1 : prev - 1
+        prev === 0 ? gym.images.length - 1 : prev - 1
       );
     }
   };
@@ -239,16 +283,16 @@ export default function ParkingDetailsPage() {
       return;
     }
     setWishlistLoading(true);
-    const isInWishlist = wishlist.includes(parking._id);
+    const isInWishlist = wishlist.includes(gym._id);
     if (isInWishlist) {
-      setWishlist(wishlist.filter((id) => id !== parking._id));
+      setWishlist(wishlist.filter((id) => id !== gym._id));
       toast.toast({
         title: "Success",
         description: "Removed from wishlist",
         variant: "success",
       });
     } else {
-      setWishlist([...wishlist, parking._id]);
+      setWishlist([...wishlist, gym._id]);
       toast.toast({
         title: "Success",
         description: "Added to wishlist",
@@ -259,11 +303,15 @@ export default function ParkingDetailsPage() {
   };
 
   const handleShare = (platform: string) => {
-    const shareUrl = `${window.location.origin}/parking/${parking._id}`;
-    const shareText = `Check out Parking Spot ${parking.spotNumber} at ${parking.location} for just $${parking.hourlyRate}/hr`;
+    const shareUrl = `${window.location.origin}/gym/${gym._id}`;
+    const shareText = `Check out Gym ${gym.spotNumber} at ${getAddressFromSpot(
+      gym
+    )} for just $${gym.pricing.finalPrice}/month`;
     let url = "";
     if (platform === "whatsapp") {
-      url = `https://wa.me/?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+      url = `https://wa.me/?text=${encodeURIComponent(
+        shareText + " " + shareUrl
+      )}`;
     } else if (platform === "facebook") {
       url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
         shareUrl
@@ -325,7 +373,7 @@ export default function ParkingDetailsPage() {
 
   const handleImageClick = (index: number) => {
     setCurrentImageIndex(index);
-    setSelectedImage(parking.images[index]);
+    setSelectedImage(gym.images[index]);
   };
 
   const renderTabContent = () => {
@@ -334,28 +382,30 @@ export default function ParkingDetailsPage() {
         return (
           <div className="py-6">
             <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Parking Details
+              Gym Details
             </h3>
             <p className="mb-3 text-gray-600">
-              <span className="font-medium">Spot:</span> {parking.spotNumber}
+              <span className="font-medium">Spot:</span> {gym.gymName}
             </p>
             <p className="mb-3 text-gray-600">
-              <span className="font-medium">Location:</span> {parking.location}
+              <span className="font-medium">Location:</span>{" "}
+              {getAddressFromSpot(gym)}
             </p>
             <p className="mb-3 text-gray-600">
               <span className="font-medium">Type:</span>{" "}
-              {parking.type.charAt(0).toUpperCase() + parking.type.slice(1)}
+              {gym.gymType.charAt(0).toUpperCase() + gym.gymType.slice(1)}
             </p>
             <p className="mb-3 text-gray-600">
-              <span className="font-medium">Hourly Rate:</span> $
-              {parking.hourlyRate}
+              <span className="font-medium">
+                Membership Price(tax inclusive):{" "}
+              </span>
+              ${gym.pricing.finalPrice}
             </p>
             <p className="mb-3 text-gray-600">
-              <span className="font-medium">Size:</span>{" "}
-              {parking.size.charAt(0).toUpperCase() + parking.size.slice(1)}
+              <span className="font-medium">Capacity:</span> {gym.capacity}
             </p>
             <div className="flex flex-wrap gap-2 mt-4">
-              {parking.amenities.map((amenity, index) => (
+              {gym.facilities.map((amenity, index) => (
                 <span
                   key={index}
                   className="bg-gray-100 text-gray-800 text-xs px-3 py-1.5 rounded-full font-medium"
@@ -368,44 +418,72 @@ export default function ParkingDetailsPage() {
         );
       case "amenities":
         return (
-          <div className="py-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              Accessibility
-            </h3>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <p className="text-gray-600">
-                  <span className="font-medium">Wheelchair Accessible:</span>{" "}
-                  {parking.accessibility.wheelchairAccessible ? "Yes" : "No"}
-                </p>
-              </div>
-              <div className="flex-1">
-                <p className="text-gray-600">
-                  <span className="font-medium">Near Entrance:</span>{" "}
-                  {parking.accessibility.nearEntrance ? "Yes" : "No"}
-                </p>
-              </div>
-            </div>
+          <div>
+            {[
+              {
+                title: "Facilities",
+                key: "facilities",
+              },
+              {
+                title: "Amenities",
+                key: "amenitites",
+              },
+              {
+                title: "Trainer Services",
+                key: "trainerServices",
+              },
+              {
+                title: "Gym Equipment",
+                key: "gymEquipment",
+              },
+              {
+                title: "Rules",
+                key: "rules",
+              },
+              {
+                title: "Additional Features",
+                key: "additionalFeatures",
+              },
+            ].map((arr, ind) =>
+              gym[arr.key].length === 0 ? (
+                ""
+              ) : (
+                <div className="py-6 px-5" key={ind}>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    {arr.title}
+                  </h3>
+                  <ul className="grid grid-cols-2 gap-4">
+                    {/* <ul className="flex-1 "> */}
+                      {gym[arr.key].map((val, idx) => (
+                        <li className="text-gray-600" key={idx}>
+                          <span className="font-medium">{val}</span>
+                        </li>
+                      ))}
+                    {/* </ul> */}
+                  </ul>
+                </div>
+              )
+            )}
           </div>
         );
       case "gallery":
         return (
           <div className="py-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {parking.images.map((image, index) => (
+              {gym.images.map((image, index) => (
                 <div
                   key={index}
                   className="relative rounded-lg overflow-hidden group shadow-md cursor-pointer transform transition-transform hover:scale-105"
                   onClick={() => handleImageClick(index)}
                 >
                   <img
-                    src={image || "/placeholder.svg"}
+                    src={image.url || "/placeholder.svg"}
                     alt={`Image ${index + 1}`}
                     className="w-full h-48 object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                     <span className="text-white text-sm font-medium">
-                      Image {index + 1}
+                      {image.name}
                     </span>
                   </div>
                 </div>
@@ -452,7 +530,7 @@ export default function ParkingDetailsPage() {
                 <textarea
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Share your experience with this parking spot..."
+                  placeholder="Share your experience with this gym spot..."
                   className="w-full border border-gray-200 rounded-lg py-3 px-4 h-32 resize-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 ></textarea>
               </div>
@@ -497,7 +575,9 @@ export default function ParkingDetailsPage() {
                         </div>
                       </div>
                       <div className="ml-auto text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                        {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(review.createdAt), {
+                          addSuffix: true,
+                        })}
                       </div>
                     </div>
                     <p className="text-sm text-gray-700 leading-relaxed mb-3">
@@ -525,7 +605,7 @@ export default function ParkingDetailsPage() {
       <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
         <div className="relative max-w-7xl w-full h-full flex items-center justify-center">
           <img
-            src={image}
+            src={image.url}
             alt="Enlarged view"
             className="max-h-full max-w-full object-contain rounded-lg"
           />
@@ -546,7 +626,9 @@ export default function ParkingDetailsPage() {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-xl w-full max-w-sm mx-4 shadow-xl">
           <div className="flex justify-between items-center p-4 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800">Share Parking Spot</h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              Share Gym Spot
+            </h3>
             <button
               onClick={() => setShowShareOptions(false)}
               className="text-gray-500 hover:bg-gray-100 p-1.5 rounded-full transition-colors"
@@ -586,13 +668,11 @@ export default function ParkingDetailsPage() {
     <div className="bg-gray-50 min-h-screen">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-800">Parking Details</h1>
+          <h1 className="text-2xl font-bold text-gray-800">Gym Details</h1>
           <div className="flex items-center text-sm text-gray-500">
-            <span>
-              Parking Spot ({parking.type?.toUpperCase() || "N/A"})
-            </span>
+            <span>Gym Spot ({gym.gymType?.toUpperCase() || "N/A"})</span>
             <span className="mx-2">•</span>
-            <span>{parking.isAvailable ? "Active" : "Inactive"}</span>
+            <span>{gym.isAvailable ? "Active" : "Inactive"}</span>
             <span className="mx-2">•</span>
             <Link
               href="#"
@@ -604,13 +684,15 @@ export default function ParkingDetailsPage() {
         </div>
       </header>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"> */}
+        <div className="w-full mx-auto gap-8">
+          <div className="flex flex-col space-y-6">
+            {/* <div className="lg:col-span-2 space-y-6"> */}
             {/* Image Carousel */}
             <div className="relative rounded-2xl overflow-hidden shadow-xl">
-              <div className="relative aspect-[16/9]">
+              <div className="relative aspect-[16/9] flex items-center">
                 <img
-                  src={parking.images[currentImageIndex] || "/placeholder.svg"}
+                  src={gym.images[currentImageIndex].url || "/placeholder.svg"}
                   alt={`Image ${currentImageIndex + 1}`}
                   className="w-full h-[400px] object-cover"
                 />
@@ -640,7 +722,7 @@ export default function ParkingDetailsPage() {
                   >
                     <Heart
                       className={`h-5 w-5 ${
-                        wishlist.includes(parking._id)
+                        wishlist.includes(gym._id)
                           ? "text-red-500 fill-red-500"
                           : "text-gray-500"
                       }`}
@@ -655,10 +737,10 @@ export default function ParkingDetailsPage() {
                 </div>
               </div>
               <div className="flex overflow-x-auto gap-2 p-4 bg-white">
-                {parking.images.map((img, index) => (
+                {gym.images.map((img, index) => (
                   <img
                     key={index}
-                    src={img || "/placeholder.svg"}
+                    src={img.url || "/placeholder.svg"}
                     alt={`Thumbnail ${index + 1}`}
                     className={`w-20 h-20 object-cover rounded-md cursor-pointer border-2 ${
                       currentImageIndex === index
@@ -675,11 +757,11 @@ export default function ParkingDetailsPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="text-3xl font-bold text-gray-800">
-                    Parking Spot {parking.spotNumber}
+                    Gym {gym.gymName}
                   </h2>
                   <div className="flex items-center text-gray-600 mt-2">
                     <MapPin className="h-5 w-5 mr-2 text-indigo-500" />
-                    <span className="text-sm">{parking.location}</span>
+                    <span className="text-sm">{getAddressFromSpot(gym)}</span>
                   </div>
                 </div>
                 <button className="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition-colors">
@@ -689,17 +771,17 @@ export default function ParkingDetailsPage() {
               <div className="flex justify-between items-center mt-4 border-b border-gray-100 pb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl font-bold text-indigo-600">
-                    ${parking.hourlyRate}
+                    ${gym.pricing.finalPrice}
                   </span>
-                  <span className="text-sm text-gray-600">/hr</span>
+                  <span className="text-sm text-gray-600">/month</span>
                 </div>
                 <div className="text-sm font-medium px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                  {parking.isAvailable ? "Available" : "Unavailable"}
+                  {gym.availableStatus}
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
                 <span className="bg-gray-100 text-gray-800 text-xs px-3 py-1.5 rounded-full font-medium">
-                  {parking.type.charAt(0).toUpperCase() + parking.type.slice(1)}
+                  {gym.gymType.charAt(0).toUpperCase() + gym.gymType.slice(1)}
                 </span>
                 <button className="ml-auto bg-indigo-100 text-indigo-800 text-xs px-3 py-1.5 rounded-full flex items-center font-medium hover:bg-indigo-200 transition-colors">
                   Play Video <ChevronRight className="h-3 w-3 ml-1" />
@@ -708,7 +790,8 @@ export default function ParkingDetailsPage() {
             </div>
             <div className="bg-white rounded-2xl shadow-md overflow-hidden">
               <div className="flex border-b border-gray-100">
-                {["about", "amenities", "gallery", "review"].map((tab) => (
+                {["about", "amenities", "gallery"].map((tab) => (
+                  // {["about", "amenities", "gallery", "review"].map((tab) => (
                   <button
                     key={tab}
                     className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
@@ -726,53 +809,6 @@ export default function ParkingDetailsPage() {
             </div>
           </div>
           {/* Owner Panel */}
-          <div>
-            <div className="bg-white rounded-2xl p-6 shadow-md sticky top-24">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Parking Owner
-              </h3>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600 border-4 border-white shadow-md mb-3">
-                  {parking.owner.name.slice(0, 2).toUpperCase()}
-                </div>
-                <h4 className="text-lg font-semibold text-gray-800">
-                  {parking.owner.name}
-                </h4>
-                <div className="flex items-center my-2">
-                  {renderStars(4.5)}
-                  <span className="ml-1 font-medium">4.5</span>
-                  <span className="ml-1 text-xs text-gray-500">
-                    ({reviews.length} reviews)
-                  </span>
-                </div>
-                <div className="w-full mt-4 space-y-3">
-                  <a
-                    href={`https://wa.me/${parking.owner.whatsappMobile.replace(
-                      /\s+/g,
-                      ""
-                    )}`}
-                    className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
-                  >
-                    <WhatsApp className="h-5 w-5" />
-                    Message on WhatsApp
-                  </a>
-                  <a
-                    href={`tel:${parking.owner.mobile.replace(/\s+/g, "")}`}
-                    className="flex items-center justify-center gap-2 w-full bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition-colors font-medium"
-                  >
-                    <Phone className="h-5 w-5" />
-                    Call Owner
-                  </a>
-                  <button
-                    onClick={() => setShowNotify(true)}
-                    className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    Notify Owner
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
       {showNotify && (
@@ -825,7 +861,9 @@ export default function ParkingDetailsPage() {
                 </button>
                 <button
                   onClick={handleSubmitNotification}
-                  disabled={!notificationTitle.trim() || !notificationText.trim()}
+                  disabled={
+                    !notificationTitle.trim() || !notificationText.trim()
+                  }
                   className={`py-2.5 rounded-lg font-medium transition-colors ${
                     notificationTitle.trim() && notificationText.trim()
                       ? "bg-indigo-600 text-white hover:bg-indigo-700"
