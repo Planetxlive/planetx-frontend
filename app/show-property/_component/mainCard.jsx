@@ -16,7 +16,86 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// SortFilter Component
+// // Dummy data fallback
+// const DUMMY_PROPERTIES = [
+//   {
+//     _id: "1",
+//     title: "Luxury Residential Apartment",
+//     category: "Residential",
+//     features: ["gym", "parking"],
+//     price: 5000000,
+//     area: "Mumbai",
+//     image: "/default-property.jpg",
+//     propertyType: "Apartment",
+//     propertyStatus: "Available",
+//     description: "A beautiful luxury apartment in Mumbai.",
+//     location: {
+//       subLocality: "Bandra",
+//       locality: "West",
+//       city: "Mumbai",
+//       state: "MH",
+//     },
+//     reviews: [],
+//   },
+//   {
+//     _id: "2",
+//     title: "Modern Gym Space",
+//     category: "Commercial",
+//     features: ["gym"],
+//     price: 2000000,
+//     area: "Delhi",
+//     image: "/default-property.jpg",
+//     propertyType: "Gym",
+//     propertyStatus: "Available",
+//     description: "Spacious gym space in Delhi.",
+//     location: {
+//       subLocality: "Saket",
+//       locality: "South",
+//       city: "Delhi",
+//       state: "DL",
+//     },
+//     reviews: [],
+//   },
+//   {
+//     _id: "3",
+//     title: "Corporate Office Space",
+//     category: "Office",
+//     features: ["parking"],
+//     price: 8000000,
+//     area: "Bangalore",
+//     image: "/default-property.jpg",
+//     propertyType: "Office",
+//     propertyStatus: "Available",
+//     description: "Prime office space in Bangalore.",
+//     location: {
+//       subLocality: "MG Road",
+//       locality: "Central",
+//       city: "Bangalore",
+//       state: "KA",
+//     },
+//     reviews: [],
+//   },
+//   {
+//     _id: "4",
+//     title: "Simple Residential Flat",
+//     category: "Residential",
+//     features: [],
+//     price: 3000000,
+//     area: "Pune",
+//     image: "/default-property.jpg",
+//     propertyType: "Flat",
+//     propertyStatus: "Available",
+//     description: "Affordable flat in Pune.",
+//     location: {
+//       subLocality: "Kothrud",
+//       locality: "West",
+//       city: "Pune",
+//       state: "MH",
+//     },
+//     reviews: [],
+//   },
+// ];
+
 const SortFilter = ({ onSortChange }) => {
   return (
     <Select onValueChange={onSortChange} defaultValue="default">
@@ -32,7 +111,6 @@ const SortFilter = ({ onSortChange }) => {
   );
 };
 
-// MainCard Component
 const MainCard = () => {
   const [propertyData, setPropertyData] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -43,7 +121,8 @@ const MainCard = () => {
   const [wishlistLoading, setWishlistLoading] = useState({});
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState( "");
+  const [searchTerm, setSearchTerm] = useState("");
+  const feature = searchParams.get("feature");
 
   // Fetch user ID and wishlist data
   useEffect(() => {
@@ -73,58 +152,152 @@ const MainCard = () => {
     fetchUserData();
   }, []);
 
-  // Fetch properties
+  // Fetch properties (API or dummy fallback)
   useEffect(() => {
     const fetchPropertyData = async () => {
       const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
-      if (!token) return;
-
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${BACKEND_URL}/properties/availableProperty?${new URLSearchParams(
-            searchParams
-          ).toString()}`,
-          { headers: { Authorization: token } }
-        );
-        const properties = response.data.properties || [];
-        setPropertyData(properties);
+        if (token) {
+          const response = await axios.get(
+            `${BACKEND_URL}/properties/availableProperty?${new URLSearchParams(
+              searchParams
+            ).toString()}`,
+            { headers: { Authorization: token } }
+          );
+          const properties = response.data.properties || [];
+          setPropertyData(properties.length ? properties : DUMMY_PROPERTIES);
+          console.log(response);
+        } else {
+          setPropertyData(DUMMY_PROPERTIES);
+        }
       } catch (error) {
-        console.error("Error fetching property data:", error);
+        setPropertyData(DUMMY_PROPERTIES);
       } finally {
         setLoading(false);
       }
     };
-
+   
+    
     fetchPropertyData();
   }, [searchParams]);
 
-  // Fetch filtered properties
+  // Filter by feature (gym, office, residential)
   useEffect(() => {
-    const fetchFilteredProperties = async () => {
-      const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
-      if (!token) return;
+    let filtered = propertyData;
+    if (feature === "gym") {
+      filtered = propertyData.filter((p) => (p.features || []).includes("gym"));
+    } else if (feature === "office") {
+      filtered = propertyData.filter((p) => p.category === "Office");
+    } else if (feature === "residential") {
+      filtered = propertyData.filter((p) => p.category === "Residential");
+    }
+    setFilteredProperties(filtered);
+  }, [propertyData, feature]);
 
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${BACKEND_URL}/properties/availableFilteredProperty?${new URLSearchParams(
-            searchParams
-          ).toString()}`,
-          { headers: { Authorization: token } }
+  // Search and sort
+  useEffect(() => {
+    let filtered = filteredProperties;
+    if (searchTerm) {
+      filtered = filtered.filter((property) => {
+        const doc = property._doc || property;
+        const name = doc.title?.toLowerCase() || "";
+        const description = doc.description?.toLowerCase() || "";
+        const category = doc.category?.toLowerCase() || "";
+        const propertyType = doc.propertyType?.toLowerCase() || "";
+        const propertyStatus = doc.propertyStatus?.toLowerCase() || "";
+        const location = getFullAddress(doc.location || {}).toLowerCase();
+
+        return (
+          name.includes(searchTerm) ||
+          description.includes(searchTerm) ||
+          category.includes(searchTerm) ||
+          propertyType.includes(searchTerm) ||
+          propertyStatus.includes(searchTerm) ||
+          location.includes(searchTerm)
         );
-        const properties = response.data?.data || [];
-        setFilteredProperties(properties);
-      } catch (error) {
-        console.error("Error fetching filtered properties:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFilteredProperties();
-  }, [searchParams]);
+      });
+    }
 
-  // Handle wishlist toggle
+    const sorted = [...filtered].sort((a, b) => {
+      const getPrice = (property) => {
+        const doc = property._doc || property;
+        return (
+          doc?.pricing?.price?.amount ||
+          doc?.pricing?.expectedPrice ||
+          doc?.pricing?.monthlyRent ||
+          doc?.price ||
+          0
+        );
+      };
+
+      const priceA = getPrice(a);
+      const priceB = getPrice(b);
+
+      if (sortOption === "price-asc") return priceA - priceB;
+      if (sortOption === "price-desc") return priceB - priceA;
+      return 0;
+    });
+
+    setFilteredProperties(sorted);
+    // eslint-disable-next-line
+  }, [searchTerm, sortOption]);
+
+  // Handle search input
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  // Handle sort change
+  const handleSortChange = (value) => {
+    setSortOption(value);
+  };
+
+  const getFullAddress = (location) =>
+    [
+      location?.houseNumber,
+      location?.apartment,
+      location?.subLocality,
+      location?.locality,
+      location?.city,
+      location?.state,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+  const getAverageRating = (reviews) =>
+    Array.isArray(reviews) && reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + (r.stars || 0), 0) / reviews.length
+        ).toFixed(1)
+      : null;
+
+  const renderStars = (rating) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 >= 0.5;
+
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars) {
+        stars.push(
+          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+        );
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push(
+          <Star
+            key={i}
+            className="h-4 w-4 fill-yellow-400 text-yellow-400"
+            style={{ clipPath: "inset(0 50% 0 0)" }}
+          />
+        );
+      } else {
+        stars.push(<Star key={i} className="h-4 w-4 text-gray-300" />);
+      }
+    }
+    return stars;
+  };
+
+  // Wishlist toggle
   const handleWishlistToggle = async (propertyId) => {
     if (!userId) {
       toast({
@@ -177,105 +350,6 @@ const MainCard = () => {
     }
   };
 
-  // Filter and sort properties
-  const handleSearch = (e) => {
-    const term = e.target.value.toLowerCase();
-    setSearchTerm(term);
-
-    let filtered =propertyData;
-    if (term) {
-      filtered = filteredProperties.filter((property) => {
-        const doc = property._doc || property; // Fallback to property if _doc is missing
-        const name = doc.name?.toLowerCase() || "";
-        const description = doc.description?.toLowerCase() || "";
-        const category = doc.category?.toLowerCase() || "";
-        const propertyType = doc.propertyType?.toLowerCase() || "";
-        const propertyStatus = doc.propertyStatus?.toLowerCase() || "";
-        const location = getFullAddress(doc.location || {}).toLowerCase();
-
-        return (
-          name.includes(term) ||
-          description.includes(term) ||
-          category.includes(term) ||
-          propertyType.includes(term) ||
-          propertyStatus.includes(term) ||
-          location.includes(term)
-        );
-      });
-    }
-
-    const sorted = [...filtered].sort((a, b) => {
-      const getPrice = (property) => {
-        const doc = property._doc || property;
-        return (
-          doc?.pricing?.price?.amount ||
-          doc?.pricing?.expectedPrice ||
-          doc?.pricing?.monthlyRent ||
-          0
-        );
-      };
-
-      const priceA = getPrice(a);
-      const priceB = getPrice(b);
-
-      if (sortOption === "price-asc") return priceA - priceB;
-      if (sortOption === "price-desc") return priceB - priceA;
-      return 0;
-    });
-
-    setFilteredProperties(sorted);
-  };
-
-  // Handle sort change
-  const handleSortChange = (value) => {
-    setSortOption(value);
-    handleSearch({ target: { value: searchTerm } });
-  };
-
-  const getFullAddress = (location) =>
-    [
-      location?.houseNumber,
-      location?.apartment,
-      location?.subLocality,
-      location?.locality,
-      location?.city,
-      location?.state,
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-  const getAverageRating = (reviews) =>
-    Array.isArray(reviews) && reviews.length > 0
-      ? (
-          reviews.reduce((sum, r) => sum + (r.stars || 0), 0) / reviews.length
-        ).toFixed(1)
-      : null;
-
-  const renderStars = (rating) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    for (let i = 0; i < 5; i++) {
-      if (i < fullStars) {
-        stars.push(
-          <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-        );
-      } else if (i === fullStars && hasHalfStar) {
-        stars.push(
-          <Star
-            key={i}
-            className="h-4 w-4 fill-yellow-400 text-yellow-400"
-            style={{ clipPath: "inset(0 50% 0 0)" }}
-          />
-        );
-      } else {
-        stars.push(<Star key={i} className="h-4 w-4 text-gray-300" />);
-      }
-    }
-    return stars;
-  };
-
   return (
     <section className="flex-1 p-4 sm:p-6 max-w-full bg-gray-50">
       {/* Search Header */}
@@ -309,7 +383,7 @@ const MainCard = () => {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
             {filteredProperties.map((property) => {
-              const doc = property._doc || property; // Fallback to property if _doc is missing
+              const doc = property._doc || property;
               const averageRating = getAverageRating(doc.reviews || []);
               return (
                 <article
@@ -321,8 +395,12 @@ const MainCard = () => {
                   {/* Image */}
                   <div className="relative w-full sm:w-72 h-48 sm:h-56 flex-shrink-0 rounded-xl overflow-hidden">
                     <img
-                      src={property?.images?.[0] }
-                      alt={doc.location?.subLocality || "Property image"}
+                      src={
+                        doc.images?.[0].url ||
+                        doc.image ||
+                        "/default-property.jpg"
+                      }
+                      alt={doc.location?.subLocality || doc.title || "Property image"}
                       className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
                       loading="lazy"
                     />
@@ -361,8 +439,9 @@ const MainCard = () => {
                             id={`property-${doc._id}`}
                             className="text-lg sm:text-xl font-semibold text-gray-900 truncate"
                           >
-                            {doc.location?.subLocality},{" "}
-                            {doc.location?.locality}
+                            {doc.title ||
+                              doc.location?.subLocality ||
+                              "Property"}
                           </h3>
                           <p className="text-xs sm:text-sm text-gray-500 line-clamp-2">
                             {getFullAddress(doc.location || {})}
@@ -391,6 +470,14 @@ const MainCard = () => {
                         <span className="text-xs text-purple-600 font-medium bg-purple-50 px-2 py-1 rounded-full capitalize">
                           {doc.propertyType || "Unknown"}
                         </span>
+                        {(doc.features || []).map((feat) => (
+                          <span
+                            key={feat}
+                            className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full capitalize"
+                          >
+                            {feat}
+                          </span>
+                        ))}
                       </div>
 
                       <p className="text-xs sm:text-sm text-gray-600 mt-2 sm:mt-3 line-clamp-2">
@@ -417,6 +504,8 @@ const MainCard = () => {
                               ? `₹${doc.pricing.finalPrice.toLocaleString(
                                   "en-IN"
                                 )}`
+                              : doc?.price
+                              ? `₹${doc.price.toLocaleString("en-IN")}`
                               : "Price N/A"}
                           </p>
                           <p className="text-xs text-gray-500">Price</p>

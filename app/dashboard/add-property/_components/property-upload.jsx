@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { FileUpload } from "@/components/file-upload";
 import { toast } from "@/hooks/use-toast";
+import { uploadPropertyImages, uploadPropertyVideo } from "@/lib/uploader";
 
 // Validation schema
 const formSchema = z.object({
@@ -31,15 +32,16 @@ export const PropertyUpload = ({
   });
 
   // Function to handle the form submission
-  function onSubmit(data) {
+  async function onSubmit(data) {
+    console.log(data);
     try {
       // setFiles((prev) => ({
       //   ...data, // Merge new data with previous state
       // }));
 
       setFiles({
+         video: data.video[0],
         images: data.images,
-        video: data.video[0],
       });
 
       toast({
@@ -47,8 +49,10 @@ export const PropertyUpload = ({
         description: "Property media uploaded successfully.",
       });
 
+      setCurrentStep((prev) => prev + 1);
       // Navigate to the next step after state is updated
     } catch (error) {
+      console.log(error);
       toast({
         title: "Error",
         description: "Failed to upload property media.",
@@ -63,7 +67,7 @@ export const PropertyUpload = ({
       console.log("Updated Files State:", files);
       // Perform actions here, like moving to the next step
       // console.log(files);
-      setCurrentStep(currentStep + 1);
+      // setCurrentStep(currentStep + 1);
     }
   }, [files]); // Runs whenever `files` changes
 
@@ -84,6 +88,9 @@ export const PropertyUpload = ({
             }}
             maxSize={10 * 1024 * 1024} // 10MB
             maxDuration={60}
+            Add
+            commentMore
+            actions
             value={form.watch("video")}
             onChange={(files) => form.setValue("video", files)}
             maxFiles={1}

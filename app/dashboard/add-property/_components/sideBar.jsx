@@ -8,7 +8,9 @@ import {
   User,
   MessageSquare,
   ClipboardList,
-  FileText
+  FileText,
+  Dumbbell,
+  CarFront
 } from "lucide-react";
 
 export const AppSidebar = () => {
@@ -25,6 +27,16 @@ export const AppSidebar = () => {
       label: "Add Property",
       href: "/dashboard/add-property",
     },
+    {
+      icon: <Dumbbell className="w-6 h-6" />,
+      label: "Add Gym",
+      href: "/dashboard/add-gym",
+    },
+            {
+          icon: <CarFront className="w-6 h-6" />,
+          label: "Add Parking",
+          href: "/dashboard/add-parking",
+        },
     {
       icon: <FileText className="w-6 h-6" />, // ✅ New My Blogs item
       label: "My Blogs",

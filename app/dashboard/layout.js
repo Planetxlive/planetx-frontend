@@ -1,17 +1,28 @@
 "use client";
 
-import { AppSidebar } from "./add-property/_components/sideBar";
-import { Navbar } from "../(home)/_components/navbar";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { AppSidebar } from "./add-property/_components/sideBar";
+import { AppSidebarGym } from "./add-gym/_components/sideBar";
+import { AppSidebarParking } from "./add-parking/_components/sideBar";
 
 const Dashboard = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Select the proper sidebar component based on the current path
+  let SidebarComponent = AppSidebar;
+  if (pathname.startsWith("/dashboard/add-gym") && !isSidebarOpen) {
+    SidebarComponent = AppSidebarGym;
+  } else if (pathname.startsWith("/dashboard/add-parking") && !isSidebarOpen) {
+    SidebarComponent = AppSidebarParking;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F5F5FA]">
       {/* Navbar */}
       {/* <Navbar /> */}
-      
+
       {/* Main Content */}
       <div className="flex flex-1 flex-col md:flex-row">
         {/* Sidebar - Hidden on mobile, visible on md+ */}
@@ -20,7 +31,7 @@ const Dashboard = ({ children }) => {
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <AppSidebar />
+          <SidebarComponent />
         </div>
 
         {/* Overlay for mobile when sidebar is open */}
@@ -32,9 +43,7 @@ const Dashboard = ({ children }) => {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto">{children}</main>
 
         {/* Toggle Button for Sidebar (Mobile) */}
         <button
