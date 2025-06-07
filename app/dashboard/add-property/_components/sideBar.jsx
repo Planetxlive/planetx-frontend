@@ -10,7 +10,8 @@ import {
   ClipboardList,
   FileText,
   Dumbbell,
-  CarFront
+  CarFront,
+  ParkingCircle
 } from "lucide-react";
 
 export const AppSidebar = () => {
@@ -32,15 +33,25 @@ export const AppSidebar = () => {
       label: "Add Gym",
       href: "/dashboard/add-gym",
     },
-            {
-          icon: <CarFront className="w-6 h-6" />,
-          label: "Add Parking",
-          href: "/dashboard/add-parking",
-        },
+    {
+      icon: <CarFront className="w-6 h-6" />,
+      label: "Add Parking",
+      href: "/dashboard/add-parking",
+    },
     {
       icon: <FileText className="w-6 h-6" />, // ✅ New My Blogs item
       label: "My Blogs",
       href: "/dashboard/myBlogs",
+    },
+    {
+      icon: <Dumbbell className="w-6 h-6" />,
+      label: "My Gym",
+      href: "/dashboard/myGym",
+    },
+    {
+      icon: <ParkingCircle className="w-6 h-6" />,
+      label: "My Parking",
+      href: "/dashboard/myParking",
     },
     {
       icon: <Heart className="w-6 h-6" />,
@@ -81,10 +92,9 @@ export const AppSidebar = () => {
               className={`
                 flex items-center gap-[15px] px-5 py-[15px] rounded-l-xl
                 transition-colors duration-200
-                ${
-                  isActive
-                    ? "text-[#7B00FF] [&_svg]:stroke-[#7B00FF]"
-                    : "text-[#6C696A] hover:text-[#7B00FF] [&_svg]:stroke-[#6C696A] hover:[&_svg]:stroke-[#7B00FF]"
+                ${isActive
+                  ? "text-[#7B00FF] [&_svg]:stroke-[#7B00FF]"
+                  : "text-[#6C696A] hover:text-[#7B00FF] [&_svg]:stroke-[#6C696A] hover:[&_svg]:stroke-[#7B00FF]"
                 }
               `}
             >

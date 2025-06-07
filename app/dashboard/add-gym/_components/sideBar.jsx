@@ -10,7 +10,8 @@ import {
   ClipboardList,
   FileText,
   Dumbbell,
-  CarFront
+  CarFront,
+  ParkingCircle
 } from "lucide-react";
 
 export const AppSidebarGym = () => {
@@ -43,6 +44,16 @@ export const AppSidebarGym = () => {
       href: "/dashboard/myBlogs",
     },
     {
+      icon: <Dumbbell className="w-6 h-6" />,
+      label: "My Gym",
+      href: "/dashboard/myGym",
+    },
+    {
+      icon: <ParkingCircle className="w-6 h-6" />,
+      label: "My Parking",
+      href: "/dashboard/myParking",
+    },
+    {
       icon: <Heart className="w-6 h-6" />,
       label: "Wishlist",
       href: "/dashboard/wishlist",
@@ -67,7 +78,7 @@ export const AppSidebarGym = () => {
       label: "Terms & Conditions",
       href: "/dashboard/terms-conditions",
     },
-    
+
   ];
 
   return (
@@ -82,10 +93,9 @@ export const AppSidebarGym = () => {
               className={`
                 flex items-center gap-[15px] px-5 py-[15px] rounded-l-xl
                 transition-colors duration-200
-                ${
-                  isActive
-                    ? "text-[#7B00FF] [&_svg]:stroke-[#7B00FF]"
-                    : "text-[#6C696A] hover:text-[#7B00FF] [&_svg]:stroke-[#6C696A] hover:[&_svg]:stroke-[#7B00FF]"
+                ${isActive
+                  ? "text-[#7B00FF] [&_svg]:stroke-[#7B00FF]"
+                  : "text-[#6C696A] hover:text-[#7B00FF] [&_svg]:stroke-[#6C696A] hover:[&_svg]:stroke-[#7B00FF]"
                 }
               `}
             >
