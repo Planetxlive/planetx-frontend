@@ -89,11 +89,11 @@ export const PropertyUpload = ({
           <FileUpload
             title="Property images"
             description="Add at least 5 images"
-            helperText="Upload up to 50 photo of max size 5 mb in format png. jpg. jpeg."
+            helperText="Upload up to 50 photo of max size 15 mb in format png. jpg. jpeg."
             accept={{
               "image/*": [".png", ".jpg", ".jpeg"],
             }}
-            maxSize={5 * 1024 * 1024} // 5MB
+            maxSize={15 * 1024 * 1024} // 5MB
             multiple
             minFiles={5}
             maxFiles={50}
