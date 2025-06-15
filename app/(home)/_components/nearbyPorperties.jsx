@@ -164,22 +164,25 @@ export const NearbyProperties = () => {
       .join(', ')
 
   return (
-    <section className="w-full py-8 md:py-16 px-4">
+    <section className="w-full py-16 md:py-24 px-4 bg-gradient-to-b from-white via-gray-50/50 to-white">
       <div className="container mx-auto max-w-7xl">
-        <div className="flex items-center justify-between mb-6 md:mb-8">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
-            Nearby Properties
-          </h2>
+        <div className="flex items-center justify-between mb-10 md:mb-14">
+          <div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
+              Nearby Properties
+            </h2>
+            <p className="mt-3 text-gray-600 text-lg">Discover properties in your vicinity</p>
+          </div>
         </div>
         {loading ? (
-          <div className="text-center py-12">
-            <Loader2 className="animate-spin h-12 w-12 text-teal-600 mx-auto" />
-            <p className="mt-4 text-gray-600">Loading nearby properties...</p>
+          <div className="text-center py-20">
+            <Loader2 className="animate-spin h-14 w-14 text-teal-600 mx-auto" />
+            <p className="mt-4 text-gray-600 font-medium text-lg">Loading nearby properties...</p>
           </div>
         ) : properties.length === 0 ? (
-          <p className="text-center text-gray-600 py-12">
-            No nearby properties available at the moment.
-          </p>
+          <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100">
+            <p className="text-gray-600 font-medium text-lg">No nearby properties available at the moment.</p>
+          </div>
         ) : (
           <div className="relative">
             <Carousel
@@ -195,23 +198,30 @@ export const NearbyProperties = () => {
                     key={property._id}
                     className="pl-2 md:pl-4 basis-full sm:basis-1/2 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                   >
-                    <Card className="w-full max-w-[320px] mx-auto h-[400px] flex flex-col border border-[#E1E1E1] rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                    <Card 
+                      className="w-full max-w-[320px] mx-auto h-[420px] flex flex-col border border-gray-100 rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-300 bg-white cursor-pointer group"
+                      onClick={() => router.push(`/show-property/${property._id}`)}
+                    >
                       <div className="relative w-full aspect-[16/9]">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10" />
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="absolute right-2 top-2 md:right-3 md:top-3 z-10 bg-white/80 hover:bg-white/90 rounded-full w-8 h-8"
-                          onClick={() => handleWishlistToggle(property._id)}
+                          className="absolute right-3 top-3 z-20 bg-white/90 hover:bg-white rounded-full w-10 h-10 shadow-sm transition-all duration-300 hover:scale-110"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleWishlistToggle(property._id);
+                          }}
                           disabled={wishlistLoading[property._id]}
                         >
                           {wishlistLoading[property._id] ? (
                             <Loader2 className="h-5 w-5 animate-spin" />
                           ) : (
                             <Heart
-                              className={`h-5 w-5 ${
+                              className={`h-5 w-5 transition-all duration-300 ${
                                 wishlist.includes(property._id)
                                   ? 'text-red-500 fill-red-500'
-                                  : 'text-gray-500'
+                                  : 'text-gray-500 group-hover:text-red-400'
                               }`}
                             />
                           )}
@@ -221,27 +231,29 @@ export const NearbyProperties = () => {
                           alt={property.location?.subLocality || 'Property'}
                           fill
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover rounded-t-xl"
-                          priority={properties.indexOf(property) < 3} // Priority for first 3 images only
+                          className="object-cover rounded-t-3xl transition-transform duration-500 group-hover:scale-105"
+                          priority={properties.indexOf(property) < 3}
                         />
                       </div>
-                      <CardContent className="flex flex-col gap-3 p-4 flex-grow">
-                        <h3 className="font-semibold text-lg line-clamp-1">
-                          {property.location?.subLocality || 'Unnamed Property'}
-                        </h3>
-                        <div className="flex flex-col gap-2">
-                          <p className="font-medium text-base text-teal-600">
-                            {property.category || 'Unknown'}
-                          </p>
-                          <div className="flex items-center gap-1 text-gray-600">
-                            <span className="text-sm line-clamp-1">
-                              {getLocationString(property.location)}
-                            </span>
+                      <CardContent className="flex flex-col gap-4 p-6 flex-grow">
+                        <div className="flex flex-col gap-3">
+                          <h3 className="font-semibold text-xl line-clamp-1 text-gray-900 group-hover:text-teal-600 transition-colors duration-300">
+                            {property.location?.subLocality || 'Unnamed Property'}
+                          </h3>
+                          <div className="flex flex-col gap-2">
+                            <p className="font-medium text-base text-teal-600 bg-teal-50/80 px-4 py-1.5 rounded-full w-fit">
+                              {property.category || 'Unknown'}
+                            </p>
+                            <div className="flex items-center gap-1.5 text-gray-600">
+                              <span className="text-sm line-clamp-1">
+                                {getLocationString(property.location)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-auto">
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                           <div>
-                            <p className="font-semibold text-lg">
+                            <p className="font-bold text-2xl text-gray-900">
                               {property?.pricing?.price?.amount
                                 ? `₹${property.pricing.price.amount.toLocaleString(
                                     'en-IN'
@@ -256,7 +268,7 @@ export const NearbyProperties = () => {
                                   )}/mo`
                                 : 'Price N/A'}
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 mt-1">
                               {property.builtUpArea?.size
                                 ? `₹${(
                                     property.pricing[0]?.price?.amount /
@@ -267,18 +279,8 @@ export const NearbyProperties = () => {
                                 : 'N/A'}
                             </p>
                           </div>
-                          <div className="flex flex-col items-end gap-2">
-                            <div className="text-sm text-gray-500">
-                              {property.propertyStatus}
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="text-sm bg-teal-50 hover:bg-teal-100 border-teal-200"
-                              onClick={() => router.push(`/show-property/${property._id}`)}
-                            >
-                              View Details
-                            </Button>
+                          <div className="text-sm font-medium px-4 py-1.5 rounded-full bg-gray-100 text-gray-700">
+                            {property.propertyStatus}
                           </div>
                         </div>
                       </CardContent>
@@ -286,9 +288,9 @@ export const NearbyProperties = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className="flex gap-2 mt-4 md:absolute md:-top-14 md:right-0 md:mt-0">
-                <CarouselPrevious className="w-8 h-8 md:w-10 md:h-10" />
-                <CarouselNext className="w-8 h-8 md:w-10 md:h-10" />
+              <div className="flex gap-3 mt-8 md:absolute md:-top-20 md:right-0 md:mt-0">
+                <CarouselPrevious className="w-12 h-12 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-300" />
+                <CarouselNext className="w-12 h-12 bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-sm transition-all duration-300" />
               </div>
             </Carousel>
           </div>
