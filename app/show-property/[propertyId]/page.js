@@ -461,7 +461,7 @@ const transformPropertyData = (data) => {
       : "Price N/A", 
     pricePerSqft: data.pricing.PricePerSqft ? `₹${data.pricing.PricePerSqft.toLocaleString("en-IN")} / sqft` : "N/A",
     isNegotiable: false,
-    tags: [category, data.availabilityStatus || "N/A", data.furnishingStatus || "Unfurnished"].filter(Boolean),
+    tags: [category, data.availabilityStatus || "N/A"].filter(Boolean),
     features,
     owner: {
       name: data.user?.name || "Unknown Owner",

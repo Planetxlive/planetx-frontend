@@ -63,11 +63,11 @@ export const NearbyProperties = () => {
       const token = localStorage.getItem('accessToken')?.replace(/^"|"$/g, '')
       if (!token) {
         setLoading(false)
-        toast({
-          title: 'Error',
-          description: 'Please log in to view nearby properties',
-          variant: 'destructive',
-        })
+        // toast({
+        //   title: 'Error',
+        //   description: 'Please log in to view nearby properties',
+        //   variant: 'destructive',
+        // })
         return
       }
 
@@ -82,11 +82,11 @@ export const NearbyProperties = () => {
         setProperties(response.data.nearbyProperties || [])
       } catch (error) {
         console.error('Error fetching nearby properties:', error)
-        toast({
-          title: 'Error',
-          description: 'Failed to fetch nearby properties',
-          variant: 'destructive',
-        })
+        // toast({
+        //   title: 'Error',
+        //   description: 'Failed to fetch nearby properties',
+        //   variant: 'destructive',
+        // })
       } finally {
         setLoading(false)
       }
@@ -98,11 +98,11 @@ export const NearbyProperties = () => {
   // Handle wishlist toggle
   const handleWishlistToggle = async (propertyId) => {
     if (!userId) {
-      toast({
-        title: 'Error',
-        description: 'Please log in to manage your wishlist',
-        variant: 'destructive',
-      })
+      // toast({
+      //   title: 'Error',
+      //   description: 'Please log in to manage your wishlist',
+      //   variant: 'destructive',
+      // })
       return
     }
 
@@ -141,13 +141,13 @@ export const NearbyProperties = () => {
         })
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: `Failed to ${
-          isInWishlist ? 'remove from' : 'add to'
-        } wishlist`,
-        variant: 'destructive',
-      })
+      // toast({
+      //   title: 'Error',
+      //   description: `Failed to ${
+      //     isInWishlist ? 'remove from' : 'add to'
+      //   } wishlist`,
+      //   variant: 'destructive',
+      // })
     } finally {
       setWishlistLoading((prev) => ({ ...prev, [propertyId]: false }))
     }
