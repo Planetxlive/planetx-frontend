@@ -498,6 +498,7 @@ export const PropertyDetailsForm = ({
             <option value="Assam">Assam</option>
             <option value="Bihar">Bihar</option>
             <option value="Chhattisgarh">Chhattisgarh</option>
+            <option value="Delhi">Delhi</option>
             <option value="Goa">Goa</option>
             <option value="Gujarat">Gujarat</option>
             <option value="Haryana">Haryana</option>
