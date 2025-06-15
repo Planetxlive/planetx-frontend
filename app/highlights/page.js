@@ -17,14 +17,12 @@ export default function Highlights() {
   const { toast } = useToast();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [viewedVideos, setViewedVideos] = useState(new Set());
-  const [showAd, setShowAd] = useState(false);
   const touchStartX = useRef(null);
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [wishlist, setWishlist] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState({});
-  const [adCounter, setAdCounter] = useState(0); // Track ad frequency
 
   // Fetch user ID and wishlist
   useEffect(() => {
@@ -147,33 +145,20 @@ export default function Highlights() {
     }
   };
 
-  // Handle ad display logic
-  const triggerAd = () => {
-    if (adCounter % 2 === 0) {
-      setShowAd(true);
-    }
-    setAdCounter((prev) => prev + 1);
-  };
-
   const goToNextProperty = () => {
-    if (showAd) return;
-    triggerAd(); // Show ad on next property navigation
     setCurrentIndex((prev) => (prev === propertyData.length - 1 ? 0 : prev + 1));
   };
 
   const goToPreviousProperty = () => {
-    if (showAd) return;
-    triggerAd(); // Show ad on previous property navigation
     setCurrentIndex((prev) => (prev === 0 ? propertyData.length - 1 : prev - 1));
   };
 
   const handleTouchStart = (e) => {
-    if (showAd) return;
     touchStartX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = (e) => {
-    if (showAd || !touchStartX.current) return;
+    if (!touchStartX.current) return;
     const touchEndX = e.changedTouches[0].clientX;
     const deltaX = touchEndX - touchStartX.current;
     if (deltaX > 50) {
@@ -182,10 +167,6 @@ export default function Highlights() {
       goToNextProperty();
     }
     touchStartX.current = null;
-  };
-
-  const handleAdClose = () => {
-    setShowAd(false);
   };
 
   const getFullAddress = (location) =>
@@ -222,7 +203,6 @@ export default function Highlights() {
                 className="w-auto flex items-center gap-2 bg-blue-400 hover:bg-blue-500 transition-colors rounded-full px-4 py-2 border-gray-200"
                 onClick={goToPreviousProperty}
                 aria-label="Previous property"
-                disabled={showAd}
               >
                 <ChevronLeft className="w-5 h-5" />
                 Previous
@@ -236,7 +216,6 @@ export default function Highlights() {
                 className="w-auto flex items-center gap-2 bg-blue-400 hover:bg-blue-500 transition-colors rounded-full px-4 py-2 border-gray-200"
                 onClick={goToNextProperty}
                 aria-label="Next property"
-                disabled={showAd}
               >
                 Next
                 <ChevronRight className="w-5 h-5" />
@@ -252,13 +231,13 @@ export default function Highlights() {
                 onNext={goToNextProperty}
                 onPrevious={goToPreviousProperty}
                 onPlay={() => {
-                  triggerAd(); // Show ad on video play
+                  // triggerAd(); // Show ad on video play
                 }}
                 onPause={() => {
-                  triggerAd(); // Show ad on video pause
+                  // triggerAd(); // Show ad on video pause
                 }}
                 onEnd={() => {
-                  triggerAd(); // Show ad on video end
+                  // triggerAd(); // Show ad on video end
                 }}
               />
             ) : (
@@ -266,7 +245,7 @@ export default function Highlights() {
             )}
 
             {/* Ad overlay */}
-            {showAd && <AdPlaceholder onClose={handleAdClose} />}
+            {/* {showAd && <AdPlaceholder onClose={handleAdClose} />} */}
 
             {/* Property details */}
             {currentProperty && (
