@@ -458,9 +458,9 @@ const transformPropertyData = (data) => {
       ? `₹${data.pricing.price.amount.toLocaleString("en-IN")}`
       : data.pricing?.monthlyRent
       ? `₹${data.pricing.monthlyRent.toLocaleString("en-IN")}/mo`
-      : "Price N/A",
+      : "Price N/A", 
     pricePerSqft: data.pricing.PricePerSqft ? `₹${data.pricing.PricePerSqft.toLocaleString("en-IN")} / sqft` : "N/A",
-    isNegotiable: true,
+    isNegotiable: false,
     tags: [category, data.availabilityStatus || "N/A", data.furnishingStatus || "Unfurnished"].filter(Boolean),
     features,
     owner: {
@@ -1367,9 +1367,9 @@ export default function PropertyDetails() {
                 >
                   <ChevronRight className="h-6 w-6 text-gray-700" />
                 </button>
-                <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">
+                {/* <div className="absolute bottom-4 left-4 bg-white px-4 py-2 rounded-lg text-sm font-medium shadow-md">
                   {property.images[currentImageIndex].label}
-                </div>
+                </div> */}
                 <div className="absolute top-4 right-4 flex gap-2">
                   <button
                     onClick={handleWishlistToggle}
@@ -1427,7 +1427,7 @@ export default function PropertyDetails() {
                   <span className="text-sm text-gray-600">{property.pricePerSqft}</span>
                 </div>
                 <div className="text-sm font-medium px-3 py-1 bg-green-100 text-green-800 rounded-full">
-                  {property.isNegotiable && "Negotiable"}
+                  {property.isNegotiable ? "Negotiable" : "Non Negotiable"}
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-4">
