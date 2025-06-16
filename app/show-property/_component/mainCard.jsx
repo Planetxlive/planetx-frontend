@@ -158,19 +158,18 @@ const MainCard = () => {
       const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
       try {
         setLoading(true);
-        if (token) {
+        
           const response = await axios.get(
-            `${BACKEND_URL}/properties/availableProperty?${new URLSearchParams(
+            `${BACKEND_URL}/properties/availableFilteredProperty?${new URLSearchParams(
               searchParams
             ).toString()}`,
-            { headers: { Authorization: token } }
           );
+            
+          console.log("Search Params:", searchParams.toString());
+          console.log("Response Data:", response.data);
           const properties = response.data.properties || [];
           setPropertyData(properties.length ? properties : DUMMY_PROPERTIES);
-          console.log(response);
-        } else {
-          setPropertyData(DUMMY_PROPERTIES);
-        }
+        
       } catch (error) {
         setPropertyData(DUMMY_PROPERTIES);
       } finally {

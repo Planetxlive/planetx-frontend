@@ -534,45 +534,45 @@ export default function PropertyDetails() {
   useEffect(() => {
     const fetchPropertyAndReviews = async () => {
       const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
-      // if (!token) {
-      //   setError("Please log in to view property details.");
-      //   setLoading(false);
-      //   return;
-      // }
-  
+      let fetchedUserId = null;
+
       try {
         setLoading(true);
-  
-        // Decode token to get userId
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const fetchedUserId = payload.userId;
-        setUserId(fetchedUserId);
-  
-        // Fetch wishlist
+
+        // Only try to decode token if it exists
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            fetchedUserId = payload.userId;
+            setUserId(fetchedUserId);
+          } catch (tokenError) {
+            console.error("Error decoding token:", tokenError);
+          }
+        }
+
+        // Fetch wishlist only if we have a valid userId
         let wishlistProperties = [];
-        try {
-          const wishlistResponse = await axios.get(
-            `${BACKEND_URL}/wishlist/get-wishlist/${fetchedUserId}`,
-            { headers: { Authorization: token } }
-          );
-          wishlistProperties =
-            wishlistResponse.data.wishlistsData?.map((item) => item._id) || [];
-        } catch (wishlistError) {
-          if (wishlistError.response?.data?.error === "No wishlists found for this user") {
-            // Handle empty wishlist gracefully
-            wishlistProperties = [];
-          } else {
-            throw wishlistError; // Rethrow other errors
+        if (fetchedUserId && token) {
+          try {
+            const wishlistResponse = await axios.get(
+              `${BACKEND_URL}/wishlist/get-wishlist/${fetchedUserId}`,
+              { headers: { Authorization: token } }
+            );
+            wishlistProperties =
+              wishlistResponse.data.wishlistsData?.map((item) => item._id) || [];
+          } catch (wishlistError) {
+            if (wishlistError.response?.data?.error === "No wishlists found for this user") {
+              wishlistProperties = [];
+            } else {
+              console.error("Error fetching wishlist:", wishlistError);
+            }
           }
         }
         setWishlist(wishlistProperties);
-  
+
         // Fetch property
         const propertyResponse = await axios.get(
-          `${BACKEND_URL}/properties/getProperty/${propertyId}`,
-          {
-            headers: { Authorization: token },
-          }
+          `${BACKEND_URL}/properties/getProperty/${propertyId}`
         );
         const fetchedProperty = propertyResponse.data.property;
         if (!fetchedProperty) {
@@ -580,16 +580,13 @@ export default function PropertyDetails() {
         }
         const transformedProperty = transformPropertyData(fetchedProperty);
         setProperty(transformedProperty);
-  
+
         // Fetch reviews
         const reviewsResponse = await axios.get(
-          `${BACKEND_URL}/properties/reviews/${propertyId}`,
-          {
-            headers: { Authorization: token },
-          }
+          `${BACKEND_URL}/properties/reviews/${propertyId}`
         );
         setReviews(reviewsResponse.data.reviews || []);
-  
+
       } catch (err) {
         setError(`Failed to fetch data: ${err.response?.data?.error || err.message}`);
         console.error("Error fetching data:", err);
@@ -597,7 +594,7 @@ export default function PropertyDetails() {
         setLoading(false);
       }
     };
-  
+
     fetchPropertyAndReviews();
   }, [propertyId]);
 
@@ -914,15 +911,15 @@ export default function PropertyDetails() {
       const [propertyResponse, reviewsResponse] = await Promise.all([
         axios.get(
           `${BACKEND_URL}/properties/getProperty/${propertyId}`,
-          {
-            headers: { Authorization: token },
-          }
+          // {
+          //   headers: { Authorization: token },
+          // }
         ),
         axios.get(
           `${BACKEND_URL}/properties/reviews/${propertyId}`,
-          {
-            headers: { Authorization: token },
-          }
+          // {
+          //   headers: { Authorization: token },
+          // }
         ),
       ]);
       setProperty(transformPropertyData(propertyResponse.data.property));
@@ -1284,7 +1281,7 @@ export default function PropertyDetails() {
               className="flex items-center gap-3 px-4 py-3 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.134.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.099-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.112-5.505 4.49-9.984 9.997-9.984 2.655 0 5.146.984 7.018 2.761a9.835 9.835 0 012.976 7.022c-.112 5.506-4.491 9.984-9.998 9.985zm6.403-1.714c.225.112.471.347.537.694.074.347.074.694-.173 1.103-.248.694-1.255 1.612-2.306 1.761-.571.085-1.213.112-1.996-.15-.446-.149-1.017-.347-1.758-.625-3.493-1.314-5.892-4.427-6.04-4.626-.149-.198-1.213-1.612-1.213-3.074 0-1.314.669-1.961.94-2.258.272-.297.571-.371.792-.371h.372c.198 0 .446-.025.669.446.272.595.892 1.985.892 1.985.025.099.05.198-.025.297-.074.099-.173.198-.347.297-.173.099-.347.297-.495.595-.149.297-.272.595-.149.892.123.297.619 1.016 1.48 1.985 1.115 1.255 2.033 1.612 2.33 1.784.297.173.595.074.792-.074.198-.149.446-.595.669-.892.223-.297.446-.347.669-.248.223.099.892.595 1.985 1.314.892.595 1.389.892 1.612.992z"/>
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.134.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.074-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.099-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.112-5.505 4.49-9.984 9.997-9.984 2.655 0 5.146.984 7.018 2.761a9.835 9.835 0 012.976 7.022c-.112 5.506-4.491 9.984-9.998 9.985zm6.403-1.714c.225.112.471.347.537.694.074.347.074.694-.173 1.103-.248.694-1.255 1.612-2.306 1.761-.571.085-1.213.112-1.996-.15-.446-.149-1.017-.347-1.758-.625-3.493-1.314-5.892-4.427-6.04-4.626-.149-.198-1.213-1.612-1.213-3.074 0-1.314.669-1.961.94-2.258.272-.297.571-.371.792-.371h.372c.198 0 .446-.025.669.446.272.595.892 1.985.892 1.985.025.099.05.198-.025.297-.074.099-.173.198-.347.297-.173.099-.347.297-.495.595-.149.297-.272.595-.149.892.123.297.619 1.016 1.48 1.48 1.115 2.033 1.612 2.33 1.784.297.173.595.074.792-.074.198-.149.446-.595.669-.892.223-.297.446-.347.669-.248.223.099.892.595 1.985 1.314.892.595 1.389.892 1.612.992z"/>
               </svg>
               WhatsApp
             </button>
@@ -1479,39 +1476,51 @@ export default function PropertyDetails() {
           <div>
             <div className="bg-white rounded-2xl p-6 shadow-md sticky top-24">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Property Owner</h3>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600 border-4 border-white shadow-md mb-3">
-                  {property.owner.name.slice(0, 2).toUpperCase()}
+              {userId ? (
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-600 border-4 border-white shadow-md mb-3">
+                    {property.owner.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-800">{property.owner.name}</h4>
+                  <div className="flex items-center my-2">
+                    {renderStars(property.owner.rating)}
+                    <span className="ml-1 font-medium">{property.owner.rating}</span>
+                    <span className="ml-1 text-xs text-gray-500">({property.owner.reviews})</span>
+                  </div>
+                  <div className="w-full mt-4 space-y-3">
+                    <a
+                      href={`https://wa.me/${property.owner.WhatsApp.replace(/\s+/g, "")}`}
+                      className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
+                    >
+                      <WhatsApp className="h-5 w-5" />
+                      Message on WhatsApp
+                    </a>
+                    <a
+                      href={`tel:${property.owner.phone.replace(/\s+/g, "")}`}
+                      className="flex items-center justify-center gap-2 w-full bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition-colors font-medium"
+                    >
+                      <Phone className="h-5 w-5" />
+                      Call Owner
+                    </a>
+                    <button
+                      onClick={() => setShowNotify(true)}
+                      className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      Notify
+                    </button>
+                  </div>
                 </div>
-                <h4 className="text-lg font-semibold text-gray-800">{property.owner.name}</h4>
-                <div className="flex items-center my-2">
-                  {renderStars(property.owner.rating)}
-                  <span className="ml-1 font-medium">{property.owner.rating}</span>
-                  <span className="ml-1 text-xs text-gray-500">({property.owner.reviews})</span>
+              ) : (
+                <div className="text-center py-8">
+                  <div className="text-gray-500 mb-4">You have to login for view property owner details</div>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                  >
+                    Login Now
+                  </Link>
                 </div>
-                <div className="w-full mt-4 space-y-3">
-                  <a
-                    href={`https://wa.me/${property.owner.WhatsApp.replace(/\s+/g, "")}`}
-                    className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
-                  >
-                    <WhatsApp className="h-5 w-5" />
-                    Message on WhatsApp
-                  </a>
-                  <a
-                    href={`tel:${property.owner.phone.replace(/\s+/g, "")}`}
-                    className="flex items-center justify-center gap-2 w-full bg-indigo-500 text-white py-3 rounded-lg hover:bg-indigo-600 transition-colors font-medium"
-                  >
-                    <Phone className="h-5 w-5" />
-                    Call Owner
-                  </a>
-                  <button
-                    onClick={() => setShowNotify(true)}
-                    className="w-full border border-gray-300 text-gray-700 py-3 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
-                  >
-                    Notify
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
