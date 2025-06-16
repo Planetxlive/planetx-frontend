@@ -9,12 +9,12 @@ import { useRouter } from "next/navigation";
 
 export default function ListingView() {
   const router = useRouter();
-  useEffect(()=>{
-      const token = localStorage.getItem("accessToken");
-      if(!token) {
-        router.push("/login");
-      }
-  },[])
+  // useEffect(()=>{
+  //     const token = localStorage.getItem("accessToken");
+  //     if(!token) {
+  //       router.push("/login");
+  //     }
+  // },[])
   return (
    
     <div className="flex flex-col md:flex-row min-h-screen bg-[#f8f4fc] p-4 md:p-10 gap-3">

@@ -534,11 +534,11 @@ export default function PropertyDetails() {
   useEffect(() => {
     const fetchPropertyAndReviews = async () => {
       const token = localStorage.getItem("accessToken")?.replace(/^"|"$/g, "");
-      if (!token) {
-        setError("Please log in to view property details.");
-        setLoading(false);
-        return;
-      }
+      // if (!token) {
+      //   setError("Please log in to view property details.");
+      //   setLoading(false);
+      //   return;
+      // }
   
       try {
         setLoading(true);
